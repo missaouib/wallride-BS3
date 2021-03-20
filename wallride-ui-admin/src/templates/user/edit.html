@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8" th:replace="layout::head(${WEBSITE_TITLE})" />
+		<title>WallRide</title>
+	</head>
+	<body>
+		<header th:replace="layout::header"></header>
+		<div>
+			<div id="wr-page-header" class="container-fluid">
+				<div class="page-header d-flex justify-content-between border-bottom py-0">
+					<h1 th:text="#{EditUser}">ユーザー編集</h1>
+				</div>
+			</div>
+			<div id="wr-page-content">
+				<div class="container-fluid">
+					<form class="form-horizontal" method="post" th:object="${form}" th:action="@{__${ADMIN_PATH}__/users/edit(query=${query})}">
+						<input type="hidden" th:field="*{id}"  />
+						<div class="form-group d-flex">
+							<label class="col-sm-2 control-label" th:text="#{Thumbnail}">Thumbnail</label>
+							<div class="col-sm-10">
+								<div class="form-control-static">
+									<a href="https://gravatar.com" target="_blank">Register Gravatar</a>
+								</div>
+							</div>
+						</div>
+						<div class="form-group d-flex">
+							<label class="col-sm-2 control-label" th:text="#{Name}">Name</label>
+							<div class="col-sm-5">
+								<input type="text" th:field="*{name.firstName}" class="form-control" th:classappend="${#fields.hasErrors('name.firstName')}? is-invalid"
+									th:attr="placeholder=#{FirstName}" />
+								<span class="invalid-feedback" th:each="err : ${#fields.errors('name.firstName')}" th:text="${err}" />
+							</div>
+							<div class="col-sm-5">
+								<input type="text" th:field="*{name.lastName}" class="form-control" th:classappend="${#fields.hasErrors('name.lastName')}? is-invalid"
+									th:attr="placeholder=#{LastName}" />
+								<span class="invalid-feedback" th:each="err : ${#fields.errors('name.lastName')}" th:text="${err}" />
+							</div>
+						</div>
+						<div class="form-group d-flex">
+							<label class="col-sm-2 control-label" th:text="#{Nickname}">Nickname</label>
+							<div class="col-sm-5">
+								<input type="text" th:field="*{nickname}" placeholder="Nickname" th:attr="placeholder=#{Nickname}" class="form-control"
+									th:classappend="${#fields.hasErrors('nickname')}? is-invalid" />
+								<span class="invalid-feedback" th:each="err : ${#fields.errors('nickname')}" th:text="${err}" />
+							</div>
+						</div>
+						<div class="form-group d-flex">
+							<label class="col-sm-2 control-label" th:text="#{Email}">E-Mail</label>
+							<div class="col-sm-10">
+								<input type="text" th:field="*{email}"  name="path" class="form-control" th:classappend="${#fields.hasErrors('email')}? is-invalid"
+									th:attr="placeholder=#{Email}" placeholder="E-Mail" />
+								<span class="invalid-feedback" th:each="err : ${#fields.errors('email')}" th:text="${err}" />
+							</div>
+						</div>
+						<div class="form-group d-flex">
+							<label class="col-sm-2 control-label" th:text="#{Profile}">Profile</label>
+							<div class="col-sm-10">
+								<textarea type="text" th:field="*{description}" class="form-control" th:classappend="${#fields.hasErrors('description')}? is-invalid"
+									style="min-height: 150px" th:attr="placeholder=#{Profile}"></textarea>
+								<span class="invalid-feedback" th:each="err : ${#fields.errors('description')}" th:text="${err}" />
+							</div>
+						</div>
+						<div class="form-group d-flex">
+							<div class="offset-sm-2 col-sm-10">
+								<div class="btn-group">
+									<button name="_step.save" class="btn btn-primary ok" th:text="#{Save}">Save</button>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<footer>
+		</footer>
+	</body>
+</html>

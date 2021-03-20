@@ -1,0 +1,38 @@
+<!--
+5 log levels: TRACE, DEBUG, INFO, WARN, ERROR; 
+logging method: trace(), debug(), info(), warn(), error().
+
+<configuration>
+	<include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+	<logger name="org.wallride" level="INFO" />
+</configuration>
+-->
+
+<configuration>
+    <!-- Display the fully qualified name of the Java classes -->
+    <property name="CONSOLE_LOG_PATTERN" value="${CONSOLE_LOG_PATTERN:-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%logger){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+    <property name="FILE_LOG_PATTERN" value="${FILE_LOG_PATTERN:-%d{yyyy-MM-dd HH:mm:ss.SSS} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %logger : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+    <!-- <property name="LOG_PATH" value="/home/hong/work/webroot/wallride/logs"/> -->
+    <property name="LOG_PATH" value="/home/mary/Downloads/wallride-BS3-home/logs"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+
+    <!-- Create daily log files -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern >${FILE_LOG_PATTERN}</pattern>
+        </encoder >
+        <file >${LOG_PATH}/spring_b.log</file >
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern >${LOG_PATH}/spring_%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
+    </appender >
+
+    <root level="WARN">
+        <appender-ref ref="FILE" />
+        <appender-ref ref="CONSOLE" />
+    </root>
+    <logger name="org.wallride" level="INFO" />
+</configuration>

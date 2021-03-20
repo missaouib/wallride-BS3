@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.wallride</groupId>
+        <artifactId>wallride</artifactId>
+        <version>1.0.0.M18</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <artifactId>wallride-tools</artifactId>
+    <packaging>jar</packaging>
+    <name>WallRide Tools</name>
+    <description>CMS for developers of principles</description>
+    <url>http://wallride.org/</url>
+    <organization>
+        <name>Tagbangers, Inc.</name>
+        <url>https://www.tagbangers.co.jp/</url>
+    </organization>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.wallride</groupId>
+            <artifactId>wallride-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+        </dependency>
+
+    </dependencies>
+</project>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8" th:replace="layout::head(${WEBSITE_TITLE})" />
+		<title>WallRide</title>
+	</head>
+	<body>
+		<header th:replace="layout::header"></header>
+		<div>
+			<div id="wr-page-header" class="container-fluid">
+				<div class="page-header d-flex justify-content-between border-bottom py-0">
+					<h1 th:text="#{GoogleAnalytics}">Google Analytics</h1>
+				</div>
+			</div>
+			<div id="wr-page-content">
+				<div class="container-fluid">
+					<div class="row">
+						<div class="col-sm-12">
+							<form th:action="@{__${ADMIN_PATH}__/analytics/edit}" th:object="${form}" method="post" class="form-horizontal" enctype="multipart/form-data">
+								<div class="alert alert-danger" th:if="${#fields.hasErrors('all')}">
+									<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+									<span th:text="#{Error}">There was a problem with your submission.</span>
+									<ul th:if="${#fields.hasErrors('global')}">
+										<li th:each="err : ${#fields.errors('global')}" th:text="${err}">Input is incorrect</li>
+									</ul>
+								</div>
+								<div class="form-group d-flex">
+									<label class="col-sm-2 control-label" th:text="#{GoogleAnalyticsTrackingID}">Tracking ID</label>
+									<div class="col-sm-5">
+										<input type="text" th:field="*{trackingId}" class="form-control" th:classappend="${#fields.hasErrors('trackingId')}? is-invalid"
+											th:attr="placeholder=#{GoogleAnalyticsTrackingID}" />
+										<span class="invalid-feedback" th:each="err : ${#fields.errors('trackingId')}" th:text="${err}" />
+									</div>
+								</div>
+								<div class="form-group d-flex">
+									<label class="col-sm-2 control-label" th:text="#{GoogleAnalyticsProfileID}">Profile ID</label>
+									<div class="col-sm-5">
+										<input type="text" th:field="*{profileId}" class="form-control" th:classappend="${#fields.hasErrors('profileId')}? is-invalid"
+											th:attr="placeholder=#{GoogleAnalyticsProfileID}" />
+										<span class="invalid-feedback" th:each="err : ${#fields.errors('profileId')}" th:text="${err}" />
+									</div>
+								</div>
+								<div class="form-group d-flex">
+									<label class="col-sm-2 control-label" th:text="#{GoogleAnalyticsCustomDimensionIndex}">Custom Dimension Index</label>
+									<div class="col-sm-5">
+										<input type="text" th:field="*{customDimensionIndex}" class="form-control" th:classappend="${#fields.hasErrors('customDimensionIndex')}? is-invalid"
+											th:attr="placeholder=#{GoogleAnalyticsCustomDimensionIndex}" />
+										<span class="invalid-feedback" th:each="err : ${#fields.errors('customDimensionIndex')}" th:text="${err}" />
+									</div>
+								</div>
+								<div class="form-group d-flex">
+									<label class="col-sm-2 control-label" th:text="#{GoogleAnalyticsServiceAccountID}">Service Account ID</label>
+									<div class="col-sm-5">
+										<input type="text" th:field="*{serviceAccountId}" class="form-control" th:classappend="${#fields.hasErrors('serviceAccountId')}? is-invalid"
+											th:attr="placeholder=#{GoogleAnalyticsServiceAccountID}" />
+										<span class="invalid-feedback" th:each="err : ${#fields.errors('serviceAccountId')}" th:text="${err}" />
+									</div>
+								</div>
+								<div class="form-group d-flex">
+									<label class="col-sm-2 control-label" th:text="#{GoogleAnalyticsServiceAccountP12File}">Service Account P12 File</label>
+									<div class="col-sm-5">
+										<input type="file" th:field="*{serviceAccountP12File}" class="form-control" th:classappend="${#fields.hasErrors('serviceAccountP12File')}? is-invalid"
+											th:attr="placeholder=#{GoogleAnalyticsServiceAccountP12File}" />
+										<span class="invalid-feedback" th:each="err : ${#fields.errors('serviceAccountP12File')}" th:text="${err}" />
+									</div>
+								</div>
+								<div class="form-group d-flex">
+									<div class="offset-sm-2 col-sm-10">
+										<a th:href="@{__${ADMIN_PATH}__/analytics}" class="btn btn-default" th:text="#{Cancel}">Cancel</a>
+										<button type="submit" class="btn btn-primary" th:text="#{Save}">Save</button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<footer>
+		</footer>
+	</body>
+</html>
