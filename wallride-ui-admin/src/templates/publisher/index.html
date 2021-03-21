@@ -11,7 +11,7 @@
 	<div id="wr-page-header" class="container-fluid">
 		<div class="page-header d-flex justify-content-between border-bottom py-0 ml-n3">
 			<h1>
-				<span th:text="${buttons.get('SAVE')} ? #{Add} : (${buttons.get('UPDATE')} ? #{Edit} : ' ')"></span>
+				<span th:text="${#sets.contains(buttons, 'SAVE')} ? #{Add} : (${#sets.contains(buttons, 'UPDATE')} ? #{Edit} : ' ')"></span>
 				<span th:text="#{Publisher}">Publisher</span>
 			</h1>
 			<div>
@@ -22,32 +22,32 @@
 				</div>
 				<div id="action-buttons" class="btn-group align-items-center">
 					<a type="button" id="add-action" class="btn btn-outline-primary"
-							value="add" th:if="${buttons.get('ADD')}"
+							value="add" th:if="${#sets.contains(buttons, 'ADD')}"
 							th:attr="data-action=@{__${ADMIN_PATH}__/publisher/create}">
 						<span data-feather="plus"></span> <span th:text="#{Add}">Add</span>
 					</a>
 					<a type="button" id="edit-action" class="btn btn-outline-primary"
-							value="edit" th:if="${buttons.get('EDIT') and (not #lists.isEmpty(publishers.getContent()))}"
+							value="edit" th:if="${#sets.contains(buttons, 'EDIT') and (not #lists.isEmpty(publishers.getContent()))}"
 							th:attr="data-action=@{__${ADMIN_PATH}__/publisher/edit}">
 						<span data-feather="edit"></span> <span th:text="#{Edit}">Edit</span>
 					</a>
 					<a type="button" id="save-action" class="btn btn-outline-primary"
-							value="save" th:if="${buttons.get('SAVE')}"
+							value="save" th:if="${#sets.contains(buttons, 'SAVE')}"
 							th:attr="data-action=@{__${ADMIN_PATH}__/publisher/save}">
 						<span data-feather="save"></span> <span th:text="#{Save}">Save</span>
 					</a>
 					<a type="button" id="update-action" class="btn btn-outline-primary"
-							value="update" th:if="${buttons.get('UPDATE')}"
+							value="update" th:if="${#sets.contains(buttons, 'UPDATE')}"
 							th:attr="data-action=@{__${ADMIN_PATH}__/publisher/update}">
 						<span data-feather="save"></span> <span th:text="#{Update}">Update</span>
 					</a>
 					<a type="button" id="delete-action" class="btn btn-outline-primary"
-							value="delete" th:if="${buttons.get('DELETE')}"
+							value="delete" th:if="${#sets.contains(buttons, 'DELETE')}"
 							th:attr="data-action=@{__${ADMIN_PATH}__/publisher/delete}">
 						<span data-feather="x"></span> <span th:text="#{Delete}">Delete</span>
 					</a>
 					<a type="button" id="cancel-action" class="btn btn-outline-primary"
-							value="cancel" th:if="${buttons.get('CANCEL')}"
+							value="cancel" th:if="${#sets.contains(buttons, 'CANCEL')}"
 							th:attr="data-action=@{__${ADMIN_PATH}__/publisher/show}">
 						<span data-feather="corner-up-left"></span> <span th:text="#{Cancel}"></span>
 					</a>
@@ -84,7 +84,7 @@
 							<div class="input-group-prepend">
 								<span class="input-group-text" for="code" th:text="#{PublisherCode}">PublisherCode</span>
 							</div>
-							<input type="text" th:field="*{code}" class="form-control" th:disabled="${buttons.get('SHOW')}"
+							<input type="text" th:field="*{code}" class="form-control" th:disabled="${#sets.contains(buttons, 'SHOW')}"
 								th:classappend="${#fields.hasErrors('code')} ? 'is-invalid'" th:attr="placeholder=#{PublisherCode}" />
 							<span class="invalid-feedback" th:each="err : ${#fields.errors('code')}" th:text="${err}"></span>
 						</div>
@@ -92,7 +92,7 @@
 							<div class="input-group-prepend">
 								<span class="input-group-text" for="name" th:text="#{PublisherName}">PublisherName</label>
 							</div>
-							<input type="text" th:field="*{name}" class="form-control" th:disabled="${buttons.get('SHOW')}"
+							<input type="text" th:field="*{name}" class="form-control" th:disabled="${#sets.contains(buttons, 'SHOW')}"
 								th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'" th:attr="placeholder=#{PublisherName}" />
 							<span class="invalid-feedback" th:each="err : ${#fields.errors('name')}" th:text="${err}"></span>
 						</div>
@@ -100,7 +100,7 @@
 							<div class="input-group-prepend">
 								<span class="input-group-text" for="country" th:text="#{Country}">Country</label>
 							</div>
-							<input type="text" th:field="*{country}" class="form-control" th:disabled="${buttons.get('SHOW')}"
+							<input type="text" th:field="*{country}" class="form-control" th:disabled="${#sets.contains(buttons, 'SHOW')}"
 								th:classappend="${#fields.hasErrors('country')} ? 'is-invalid'" th:attr="placeholder=#{Country}" />
 							<span class="invalid-feedback" th:each="err : ${#fields.errors('country')}" th:text="${err}"></span>
 						</div>
@@ -108,7 +108,7 @@
 							<div class="input-group-prepend">
 								<span class="input-group-text" for="webpage" th:text="#{Webpage}">Webpage</label>
 							</div>
-							<input type="text" th:field="*{webpage}" class="form-control" th:disabled="${buttons.get('SHOW')}"
+							<input type="text" th:field="*{webpage}" class="form-control" th:disabled="${#sets.contains(buttons, 'SHOW')}"
 								th:classappend="${#fields.hasErrors('webpage')} ? 'is-invalid'" th:attr="placeholder=#{Webpage}" />
 							<span class="invalid-feedback" th:each="err : ${#fields.errors('webpage')}" th:text="${err}"></span>
 						</div>
@@ -116,7 +116,7 @@
 							<div class="input-group-prepend">
 								<span class="input-group-text" for="notes" th:text="#{Notes}">Notes</label>
 							</div>
-							<textarea type="text" th:field="*{notes}" class="form-control" style="min-height: 150px" th:disabled="${buttons.get('SHOW')}"
+							<textarea type="text" th:field="*{notes}" class="form-control" style="min-height: 150px" th:disabled="${#sets.contains(buttons, 'SHOW')}"
 								th:classappend="${#fields.hasErrors('notes')} ? 'is-invalid'" th:attr="placeholder=#{Notes}">
 							</textarea>
 							<span class="invalid-feedback" th:each="err : ${#fields.errors('notes')}" th:text="${err}"></span>

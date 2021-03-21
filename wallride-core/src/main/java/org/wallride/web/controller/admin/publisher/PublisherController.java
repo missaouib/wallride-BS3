@@ -63,10 +63,12 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/{language}/publisher")
@@ -104,18 +106,6 @@ public class PublisherController {
 		return form;
 	}
 
-	@ModelAttribute("buttons")
-	public Map<String, Boolean> buttons() {
-		Map<String, Boolean> buttons = new HashMap<>();
-		buttons.put(Actions.ADD.toString(), false);
-		buttons.put(Actions.EDIT.toString(), false);
-		buttons.put(Actions.SAVE.toString(), false);
-		buttons.put(Actions.UPDATE.toString(), false);
-		buttons.put(Actions.SHOW.toString(), false);
-		buttons.put(Actions.CANCEL.toString(), false);
-		return buttons;
-	}
-
 	@ExceptionHandler(BindException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public @ResponseBody RestValidationErrorModel bindException(BindException e) {
@@ -133,7 +123,6 @@ public class PublisherController {
 			@PathVariable String language,
 			@ModelAttribute("form") PublisherForm form,
 			BindingResult result,
-			@ModelAttribute("buttons") Map<String, Boolean> buttons,
 			@PageableDefault(ITEMS_PER_PAGE) Pageable pageable,
 			Model model,
 			HttpServletRequest servletRequest)
@@ -152,9 +141,11 @@ public class PublisherController {
 			model.addAttribute("form", editForm);
 		}
 
-		buttons.put(Actions.ADD.toString(), true);
-		buttons.put(Actions.EDIT.toString(), true);
-		buttons.put(Actions.SHOW.toString(), true);
+		Set<String> buttons = new HashSet<>();
+		buttons.add(Actions.ADD.toString());
+		buttons.add(Actions.EDIT.toString());
+		buttons.add(Actions.SHOW.toString());
+		model.addAttribute("buttons", buttons);
 
 		return "publisher/index";
 	}
@@ -165,7 +156,6 @@ public class PublisherController {
 			@RequestParam long id,
 			@ModelAttribute("form") PublisherForm form,
 			BindingResult result,
-			@ModelAttribute("buttons") Map<String, Boolean> buttons,
 			@PageableDefault(ITEMS_PER_PAGE) Pageable pageable,
 			Model model,
 			RedirectAttributes redirectAttributes,
@@ -174,9 +164,11 @@ public class PublisherController {
 		Publisher publisher = publisherService.getPublisherById(id);
 		model.addAttribute("selectedPublisher", publisher);
 
-		buttons.put(Actions.ADD.toString(), true);
-		buttons.put(Actions.EDIT.toString(), true);
-		buttons.put(Actions.SHOW.toString(), true);
+		Set<String> buttons = new HashSet<>();
+		buttons.add(Actions.ADD.toString());
+		buttons.add(Actions.EDIT.toString());
+		buttons.add(Actions.SHOW.toString());
+		model.addAttribute("buttons", buttons);
 
 		if (!language.equals(publisher.getLanguage())) {
 			redirectAttributes.addAttribute("language", language);
@@ -200,7 +192,6 @@ public class PublisherController {
 			@PathVariable String language,
 			@ModelAttribute("form") PublisherForm form,
 			BindingResult result,
-			@ModelAttribute("buttons") Map<String, Boolean> buttons,
 			@PageableDefault(ITEMS_PER_PAGE) Pageable pageable,
 			Model model,
 			RedirectAttributes redirectAttributes,
@@ -217,8 +208,10 @@ public class PublisherController {
 		form.setKeyword(keyword);
 		model.addAttribute("form", form);
 
-		buttons.put(Actions.SAVE.toString(), true);
-		buttons.put(Actions.CANCEL.toString(), true);
+		Set<String> buttons = new HashSet<>();
+		buttons.add(Actions.SAVE.toString());
+		buttons.add(Actions.CANCEL.toString());
+		model.addAttribute("buttons", buttons);
 
 		return "publisher/index";
 	}
@@ -229,7 +222,6 @@ public class PublisherController {
 			@Validated(PublisherForm.CreateValidations.class) @ModelAttribute("form") PublisherForm form,
 			BindingResult errors,
 			@PageableDefault(ITEMS_PER_PAGE) Pageable pageable,
-			@ModelAttribute("buttons") Map<String, Boolean> buttons,
 			AuthorizedUser authorizedUser,
 			RedirectAttributes redirectAttributes,
 			Model model,
@@ -240,8 +232,10 @@ public class PublisherController {
 		model.addAttribute("pageable", pageable);
 		model.addAttribute("pagination", new Pagination<>(publishers, servletRequest));
 
-		buttons.put(Actions.SAVE.toString(), true);
-		buttons.put(Actions.CANCEL.toString(), true);
+		Set<String> buttons = new HashSet<>();
+		buttons.add(Actions.SAVE.toString());
+		buttons.add(Actions.CANCEL.toString());
+		model.addAttribute("buttons", buttons);
 
 		if (errors.hasErrors()) {
 			return "publisher/index";
@@ -271,7 +265,6 @@ public class PublisherController {
 	public String edit(
 			@PathVariable String language,
 			@ModelAttribute("form") PublisherForm form,
-			@ModelAttribute("buttons") Map<String, Boolean> buttons,
 			Model model,
 			@PageableDefault(ITEMS_PER_PAGE) Pageable pageable,
 			RedirectAttributes redirectAttributes,
@@ -280,9 +273,11 @@ public class PublisherController {
 		Publisher publisher = publisherService.getPublisherById(form.getId());
 		model.addAttribute("selectedPublisher", publisher);
 
-		buttons.put(Actions.UPDATE.toString(), true);
-		buttons.put(Actions.DELETE.toString(), true);
-		buttons.put(Actions.CANCEL.toString(), true);
+		Set<String> buttons = new HashSet<>();
+		buttons.add(Actions.UPDATE.toString());
+		buttons.add(Actions.DELETE.toString());
+		buttons.add(Actions.CANCEL.toString());
+		model.addAttribute("buttons", buttons);
 
 		if (!language.equals(publisher.getLanguage())) {
 			redirectAttributes.addAttribute("language", language);
@@ -306,7 +301,6 @@ public class PublisherController {
 			@PathVariable String language,
 			@Validated(PublisherForm.UpdateValidations.class) @ModelAttribute("form") PublisherForm form,
 			BindingResult errors,
-			@ModelAttribute("buttons") Map<String, Boolean> buttons,
 			Model model,
 			@PageableDefault(ITEMS_PER_PAGE) Pageable pageable,
 			AuthorizedUser authorizedUser,
@@ -319,9 +313,11 @@ public class PublisherController {
 		Pagination<Publisher> pagination = new Pagination<>(publishers, servletRequest);
 		model.addAttribute("pagination", pagination);
 
-		buttons.put(Actions.UPDATE.toString(), true);
-		buttons.put(Actions.DELETE.toString(), true);
-		buttons.put(Actions.CANCEL.toString(), true);
+		Set<String> buttons = new HashSet<>();
+		buttons.add(Actions.UPDATE.toString());
+		buttons.add(Actions.DELETE.toString());
+		buttons.add(Actions.CANCEL.toString());
+		model.addAttribute("buttons", buttons);
 
 		if (errors.hasErrors()) {
 			logger.debug("Errors: {}", errors);
