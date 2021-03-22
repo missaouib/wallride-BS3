@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -86,13 +87,13 @@ public class PublisherController {
 
 	private static Logger logger = LoggerFactory.getLogger(PublisherController.class);
 
-	public static final int ITEMS_PER_PAGE = 10;
+	public static final int ITEMS_PER_PAGE = 3;
 	
 	@ModelAttribute("form")
-	public PublisherForm form(Model model) {
+	public PublisherForm form(ModelMap modelMap) {
 		// Cover the case where form validation fails and the user is redirected back
 		// Source is https://web.archive.org/web/20160606223639/https://gerrydevstory.com/2013/07/11/preserving-validation-error-messages-on-spring-mvc-form-post-redirect-get/
-		PublisherForm form = (PublisherForm) model.asMap().get("form");
+		PublisherForm form = (PublisherForm) modelMap.get("form");
 		if (form == null) {
 			form = new PublisherForm();
 		}
@@ -125,13 +126,13 @@ public class PublisherController {
 		model.addAttribute("pageable", pageable);
 		model.addAttribute("pagination", new Pagination<>(publishers, servletRequest));
 
-		logger.warn("form = {}", form);
-		// if (!publishers.isEmpty()) {
-		// 	Publisher selectedPublisher = publishers.getContent().get(0);
+		logger.info("/search form = {}", form);
+		// if (form.getId() != null) {
+		// 	Publisher selectedPublisher = publisherService.getPublisherById(form.getId());
 		// 	model.addAttribute("selectedPublisher", selectedPublisher);
 		// 	PublisherForm editForm = PublisherForm.createFormfromDomainObject(selectedPublisher);
-		// 	editForm.setKeyword(form.getKeyword());
-		// 	model.addAttribute("form", editForm);
+		// 	model.addAttribute("form", editForm.withKeyword(form.getKeyword()));
+		// 	logger.info("/search editForm = {}", editForm);
 		// }
 
 		Set<String> buttons = new HashSet<>();
@@ -164,8 +165,7 @@ public class PublisherController {
 		model.addAttribute("buttons", buttons);
 
 		PublisherForm editForm = PublisherForm.createFormfromDomainObject(publisher);
-		editForm.setKeyword(form.getKeyword());
-		model.addAttribute("form", editForm);
+		model.addAttribute("form", editForm.withKeyword(form.getKeyword()));
 
 		Page<Publisher> publishers = publisherService.getPublishers(editForm, pageable);
 		model.addAttribute("publishers", publishers);
@@ -190,10 +190,14 @@ public class PublisherController {
 		model.addAttribute("pageable", pageable);
 		model.addAttribute("pagination", new Pagination<>(publishers, servletRequest));
 
-		String keyword = form.getKeyword();
-		form = new PublisherForm();
-		form.setKeyword(keyword);
-		model.addAttribute("form", form);
+		PublisherForm newForm;
+		if (!publisherService.isFormNotBlank(form)) {
+			newForm = new PublisherForm();
+		} else {
+			// This covers the case of navigating to another page.
+			newForm = form;
+		}
+		model.addAttribute("form", newForm);
 
 		Set<String> buttons = new HashSet<>();
 		buttons.add(Actions.SAVE.toString());
@@ -213,6 +217,7 @@ public class PublisherController {
 			RedirectAttributes redirectAttributes,
 			Model model,
 			HttpServletRequest servletRequest) {
+		logger.info("/save form = {}", form);
 		Page<Publisher> publishers = publisherService.getPublishers(form.withLanguage(language), pageable);
 		model.addAttribute("publishers", publishers);
 		model.addAttribute("pageable", pageable);
@@ -255,6 +260,10 @@ public class PublisherController {
 			@PageableDefault(ITEMS_PER_PAGE) Pageable pageable,
 			RedirectAttributes redirectAttributes,
 			HttpServletRequest servletRequest) {
+		if (form.getId() == null) {
+			redirectAttributes.addFlashAttribute("noPublisherSelected", true);
+			return "redirect:/_admin/{language}/publisher/search";
+		}
 		Publisher publisher = publisherService.getPublisherById(form.withLanguage(language).getId());
 		model.addAttribute("selectedPublisher", publisher);
 
@@ -264,11 +273,17 @@ public class PublisherController {
 		buttons.add(Actions.CANCEL.toString());
 		model.addAttribute("buttons", buttons);
 
-		PublisherForm editForm = PublisherForm.createFormfromDomainObject(publisher);
-		editForm.setKeyword(form.getKeyword());
-		model.addAttribute("form", editForm);
+		PublisherForm newForm;
+		if (!publisherService.isFormNotBlank(form)) {
+			newForm = PublisherForm.createFormfromDomainObject(publisher)
+					.withKeyword(form.getKeyword());
+		} else {
+			// This covers the case of navigating to another page.
+			newForm = form;
+		}
+		model.addAttribute("form", newForm);
 
-		Page<Publisher> publishers = publisherService.getPublishers(editForm, pageable);
+		Page<Publisher> publishers = publisherService.getPublishers(newForm, pageable);
 		model.addAttribute("publishers", publishers);
 		model.addAttribute("pageable", pageable);
 		model.addAttribute("pagination", new Pagination<>(publishers, servletRequest));

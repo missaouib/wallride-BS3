@@ -133,4 +133,17 @@ public class PublisherService {
 	public Page<Publisher> getPublishers(PublisherForm form, Pageable pageable) {
 		return publisherRepository.search(form, pageable);
 	}
+
+	public boolean isFormNotBlank(PublisherForm form) {
+		boolean isCodeEdited = form.getCode() != null && !form.getCode().isEmpty();
+		boolean isNameEdited = form.getName() != null && !form.getName().isEmpty();
+		boolean isCountryEdited = form.getCountry() != null && !form.getCountry().isEmpty();
+		boolean isWebpageEdited = form.getWebpage() != null && !form.getWebpage().isEmpty();
+		boolean isNotesEdited = form.getNotes() != null && !form.getNotes().isEmpty();
+		boolean isKeywordEdited = form.getKeyword() != null && !form.getKeyword().isEmpty();
+		if (isCodeEdited ||	isNameEdited || isCountryEdited || isWebpageEdited || isNotesEdited || isKeywordEdited) {
+			return true;
+		}
+		return false;
+	}
 }

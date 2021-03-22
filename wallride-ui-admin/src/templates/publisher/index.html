@@ -70,6 +70,14 @@
 				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
 				<span th:text="#{DeletedPublisher}">Publisher Deleted.</span>
 			</div>
+			<div id="message-no-selection" class="alert alert-danger" th:if="${noPublisherSelected ne null}">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+				<span th:text="#{NoPublisher}">No Publisher Selected.</span>
+			</div>
+			<div id="message-no-items" class="alert alert-info" th:if="${#lists.isEmpty(publishers.getContent())}">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+				<span th:text="#{NoItems}">No Items.</span>
+			</div>
 			<section id="publisher-content">
 				<form id="publisher-form" method="post" th:object="${form}"
 						th:action="@{__${ADMIN_PATH}__/publisher/show}" class="row">
@@ -78,13 +86,12 @@
 							<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
 							<span th:text="#{Error}">Error</span>
 						</div>
-						<!-- <input type="hidden" name="id" th:value="${publisher} ? ${publisher.id} : ''"  /> -->
 						<input type="hidden" name="id" th:value="*{id}"  />
 						<div class="input-group mb-3">
 							<div class="input-group-prepend">
 								<span class="input-group-text" for="code" th:text="#{PublisherCode}">PublisherCode</span>
 							</div>
-							<input type="text" th:field="*{code}" class="form-control" th:disabled="${#sets.contains(buttons, 'SHOW')}"
+							<input type="text" th:field="*{code}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
 								th:classappend="${#fields.hasErrors('code')} ? 'is-invalid'" th:attr="placeholder=#{PublisherCode}" />
 							<span class="invalid-feedback" th:each="err : ${#fields.errors('code')}" th:text="${err}"></span>
 						</div>
@@ -92,7 +99,7 @@
 							<div class="input-group-prepend">
 								<span class="input-group-text" for="name" th:text="#{PublisherName}">PublisherName</label>
 							</div>
-							<input type="text" th:field="*{name}" class="form-control" th:disabled="${#sets.contains(buttons, 'SHOW')}"
+							<input type="text" th:field="*{name}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
 								th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'" th:attr="placeholder=#{PublisherName}" />
 							<span class="invalid-feedback" th:each="err : ${#fields.errors('name')}" th:text="${err}"></span>
 						</div>
@@ -100,7 +107,7 @@
 							<div class="input-group-prepend">
 								<span class="input-group-text" for="country" th:text="#{Country}">Country</label>
 							</div>
-							<input type="text" th:field="*{country}" class="form-control" th:disabled="${#sets.contains(buttons, 'SHOW')}"
+							<input type="text" th:field="*{country}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
 								th:classappend="${#fields.hasErrors('country')} ? 'is-invalid'" th:attr="placeholder=#{Country}" />
 							<span class="invalid-feedback" th:each="err : ${#fields.errors('country')}" th:text="${err}"></span>
 						</div>
@@ -108,7 +115,7 @@
 							<div class="input-group-prepend">
 								<span class="input-group-text" for="webpage" th:text="#{Webpage}">Webpage</label>
 							</div>
-							<input type="text" th:field="*{webpage}" class="form-control" th:disabled="${#sets.contains(buttons, 'SHOW')}"
+							<input type="text" th:field="*{webpage}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
 								th:classappend="${#fields.hasErrors('webpage')} ? 'is-invalid'" th:attr="placeholder=#{Webpage}" />
 							<span class="invalid-feedback" th:each="err : ${#fields.errors('webpage')}" th:text="${err}"></span>
 						</div>
@@ -116,22 +123,22 @@
 							<div class="input-group-prepend">
 								<span class="input-group-text" for="notes" th:text="#{Notes}">Notes</label>
 							</div>
-							<textarea type="text" th:field="*{notes}" class="form-control" style="min-height: 150px" th:disabled="${#sets.contains(buttons, 'SHOW')}"
+							<textarea type="text" th:field="*{notes}" class="form-control" style="min-height: 150px" th:readonly="${#sets.contains(buttons, 'SHOW')}"
 								th:classappend="${#fields.hasErrors('notes')} ? 'is-invalid'" th:attr="placeholder=#{Notes}">
 							</textarea>
 							<span class="invalid-feedback" th:each="err : ${#fields.errors('notes')}" th:text="${err}"></span>
 						</div>
 						<!-- <div class="btn-group">
-							<button name="submit" class="btn btn-primary ok" th:text="#{Save}" th:disabled="${disabled}">Save</button>
+							<button name="submit" class="btn btn-primary ok" th:text="#{Save}" th:readonly="${disabled}">Save</button>
 						</div> -->
 					</div>
 
 					<div id="publisher-items" class="list-group col-4">
 						<div id="search-form" class="input-group mb-2">
-							<input type="text" name="keyword" th:value="*{keyword}" class="form-control" th:attr="placeholder=#{Keywords}"/>
+							<input id="search-input" type="text" name="keyword" th:value="*{keyword}" class="form-control" th:attr="placeholder=#{Keywords}"/>
 							<div class="input-group-append">
-								<button id="search-button" class="btn btn-success"
-										th:attr="data-action=@{__${ADMIN_PATH}__/publisher/search}">
+								<button id="search-button" class="btn btn-success" formmethod="post"
+										th:formaction="@{__${ADMIN_PATH}__/publisher/search}">
 									Go
 								</button>
 							</div>
@@ -149,20 +156,20 @@
 							<ul class="pagination pagination-sm">
 								<li th:classappend="${pagination.hasPreviousPage() ? '' : 'disabled'}" class="page-item">
 									<!-- <a th:href="@{${pagination.url}(page=${pagination.previousPageNumber})}" th:text="#{Prev}" class="page-link">Prev</a> -->
-									<button class="page-link" th:attr="data-action=@{${pagination.url}(page=${pagination.previousPageNumber})}">
+									<button class="page-link" formmethod="post" th:formaction="@{${pagination.url}(page=${pagination.previousPageNumber})}">
 										<span th:text="#{Prev}">Prev</span>
 									</button>
 								</li>
 								<li th:each="p : ${pagination.getPageables(pageable)}" th:classappend="${p.pageNumber eq pagination.currentPageNumber ? 'active' : ''}" class="page-item">
 									<!-- <a th:href="@{${pagination.url}(page=${p.pageNumber})}" th:text="${p.pageNumber + 1}" class="page-link">
 									</a> -->
-									<button class="page-link" th:attr="data-action=@{${pagination.url}(page=${p.pageNumber})}">
+									<button class="page-link" formmethod="post" th:formaction="@{${pagination.url}(page=${p.pageNumber})}">
 										<span th:text="${p.pageNumber + 1}">Prev</span>
 									</button>
 								</li>
 								<li th:classappend="${pagination.hasNextPage() ? '' : 'disabled'}" class="page-item">
 									<!-- <a th:href="@{${pagination.url}(page=${pagination.nextPageNumber})}" th:text="#{Next}" class="page-link">Next</a> -->
-									<button class="page-link" th:attr="data-action=@{${pagination.url}(page=${pagination.nextPageNumber})}">
+									<button class="page-link" formmethod="post" th:formaction="@{${pagination.url}(page=${pagination.nextPageNumber})}">
 										<span th:text="#{Next}">Next</span>
 									</button>
 								</li>
@@ -185,14 +192,6 @@
 							let $form = $self.closest('form');
 							$form.attr('action', $self.attr('href'));
 							$form.submit();
-						}).on('click', '.page-link, #search-button', function(e) {
-							e.preventDefault();
-							logger.warn('Click button');
-							let $self = $(this);
-							let $form = $self.closest('form');
-
-							$form.attr('action', $self.data('action'));
-							$form.submit();
 						});
 						$('#wr-page-header').on('click', '[data-action]', function(e) {
 							e.preventDefault();
@@ -211,7 +210,7 @@
 									// The cancel button's data-action attribute has the value .../show.
 									
 									action = action.replace('show', 'search');
-								} else if ($input.attr('value') == "") {
+								} else if ($input.attr('value') == '') {
 									// When we are in the add item mode and click the cancel button,
 									// show the page's first item.
 
@@ -222,12 +221,19 @@
 									// (eg, going back in history).
 									action += '&id=' + first_id;
 								}
+							} else if ($self.is('#add-action')) {
+								$form.find(':input').val('');
 							}
 
 							$form.attr('action', action);
 							$form.submit();
 						});
 						// TODO after pressing enter in the form, run the 1st button on the left (add/save/update)
+						$('#publisher-form').keypress(function(e) {
+							if (e.which == 13) {
+								logger.info('Pressed enter');
+							}
+						});
 					});
 					// ]]>
 				</script>
