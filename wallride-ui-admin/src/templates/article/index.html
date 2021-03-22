@@ -142,7 +142,7 @@
 										<tr th:each="article : ${articles}" th:attr="data-href=@{__${ADMIN_PATH}__/articles/describe(id=${article.id},query=${query})}" class="clickable">
 											<td class="wr-tr-checkbox" style="width:40px"><input type="checkbox" name="ids" th:value="${article.id}" th:attr="data-status=${#messages.msg('Post.Status.' + article.status)}"/></td>
 											<td th:class="'wr-post-status-' + ${article.status}" th:text="${#messages.msg('Post.Status.' + article.status)}">Status</td>
-											<td th:text="${article.title?:'(No Titled)'}" style="font-weight: bold;">Title</td>
+											<td th:utext="${article.title?:'(No Titled)'}" style="font-weight: bold;">Title</td>
 											<td><th:block th:each="category : ${article.categories}"><a th:href="@{__${ADMIN_PATH}__/articles/index(categoryId=${category.id})}" th:text="${category}"></a> <span th:unless="${categoryStat.last}">&nbsp; | &nbsp;</span></th:block></td>
 											<td><th:block th:each="tag : ${article.tags}"><a th:href="@{__${ADMIN_PATH}__/articles/index(tagId=${tag.id})}" th:text="${tag}"></a> <span th:unless="${tagStat.last}">&nbsp; | &nbsp;</span></th:block></td>
 											<td><a th:if="${article.author ne null}" th:href="@{__${ADMIN_PATH}__/articles/index(authorId=${article.author.id})}" th:text="${article.author.name}">Author</a></td>

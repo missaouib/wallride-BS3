@@ -58,6 +58,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ValidationException;
+import static org.wallride.service.PublisherService.*;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -76,8 +77,10 @@ public class PublisherController {
 
 	@Inject
 	private PublisherService publisherService;
+
 	@Inject
 	private MessageSourceAccessor messageSourceAccessor;
+	
 	@PersistenceContext
 	private EntityManager entityManager;
 
@@ -85,16 +88,6 @@ public class PublisherController {
 
 	public static final int ITEMS_PER_PAGE = 10;
 	
-	public enum Actions {
-		ADD,
-		EDIT,
-		SAVE,
-		UPDATE,
-		DELETE,
-		SHOW,
-		CANCEL;
-	}
-
 	@ModelAttribute("form")
 	public PublisherForm form(Model model) {
 		// Cover the case where form validation fails and the user is redirected back
@@ -127,19 +120,19 @@ public class PublisherController {
 			Model model,
 			HttpServletRequest servletRequest)
 			throws UnsupportedEncodingException {
-		form.setLanguage(language);
-		Page<Publisher> publishers = publisherService.getPublishers(form, pageable);
+		Page<Publisher> publishers = publisherService.getPublishers(form.withLanguage(language), pageable);
 		model.addAttribute("publishers", publishers);
 		model.addAttribute("pageable", pageable);
 		model.addAttribute("pagination", new Pagination<>(publishers, servletRequest));
 
-		if (!publishers.isEmpty()) {
-			Publisher selectedPublisher = publishers.getContent().get(0);
-			model.addAttribute("selectedPublisher", selectedPublisher);
-			PublisherForm editForm = PublisherForm.createFormfromDomainObject(selectedPublisher);
-			editForm.setKeyword(form.getKeyword());
-			model.addAttribute("form", editForm);
-		}
+		logger.warn("form = {}", form);
+		// if (!publishers.isEmpty()) {
+		// 	Publisher selectedPublisher = publishers.getContent().get(0);
+		// 	model.addAttribute("selectedPublisher", selectedPublisher);
+		// 	PublisherForm editForm = PublisherForm.createFormfromDomainObject(selectedPublisher);
+		// 	editForm.setKeyword(form.getKeyword());
+		// 	model.addAttribute("form", editForm);
+		// }
 
 		Set<String> buttons = new HashSet<>();
 		buttons.add(Actions.ADD.toString());
@@ -170,11 +163,6 @@ public class PublisherController {
 		buttons.add(Actions.SHOW.toString());
 		model.addAttribute("buttons", buttons);
 
-		if (!language.equals(publisher.getLanguage())) {
-			redirectAttributes.addAttribute("language", language);
-			return "redirect:/_admin/{language}/publisher/search";
-		}
-
 		PublisherForm editForm = PublisherForm.createFormfromDomainObject(publisher);
 		editForm.setKeyword(form.getKeyword());
 		model.addAttribute("form", editForm);
@@ -197,8 +185,7 @@ public class PublisherController {
 			RedirectAttributes redirectAttributes,
 			HttpServletRequest servletRequest)
 			throws BindException {
-		form.setLanguage(language);
-		Page<Publisher> publishers = publisherService.getPublishers(form, pageable);
+		Page<Publisher> publishers = publisherService.getPublishers(form.withLanguage(language), pageable);
 		model.addAttribute("publishers", publishers);
 		model.addAttribute("pageable", pageable);
 		model.addAttribute("pagination", new Pagination<>(publishers, servletRequest));
@@ -226,8 +213,7 @@ public class PublisherController {
 			RedirectAttributes redirectAttributes,
 			Model model,
 			HttpServletRequest servletRequest) {
-		form.setLanguage(language);
-		Page<Publisher> publishers = publisherService.getPublishers(form, pageable);
+		Page<Publisher> publishers = publisherService.getPublishers(form.withLanguage(language), pageable);
 		model.addAttribute("publishers", publishers);
 		model.addAttribute("pageable", pageable);
 		model.addAttribute("pagination", new Pagination<>(publishers, servletRequest));
@@ -269,8 +255,7 @@ public class PublisherController {
 			@PageableDefault(ITEMS_PER_PAGE) Pageable pageable,
 			RedirectAttributes redirectAttributes,
 			HttpServletRequest servletRequest) {
-		form.setLanguage(language);
-		Publisher publisher = publisherService.getPublisherById(form.getId());
+		Publisher publisher = publisherService.getPublisherById(form.withLanguage(language).getId());
 		model.addAttribute("selectedPublisher", publisher);
 
 		Set<String> buttons = new HashSet<>();
@@ -278,11 +263,6 @@ public class PublisherController {
 		buttons.add(Actions.DELETE.toString());
 		buttons.add(Actions.CANCEL.toString());
 		model.addAttribute("buttons", buttons);
-
-		if (!language.equals(publisher.getLanguage())) {
-			redirectAttributes.addAttribute("language", language);
-			return "redirect:/_admin/{language}/publisher/search";
-		}
 
 		PublisherForm editForm = PublisherForm.createFormfromDomainObject(publisher);
 		editForm.setKeyword(form.getKeyword());
@@ -306,8 +286,7 @@ public class PublisherController {
 			AuthorizedUser authorizedUser,
 			RedirectAttributes redirectAttributes,
 			HttpServletRequest servletRequest) {
-		form.setLanguage(language);
-		Page<Publisher> publishers = publisherService.getPublishers(form, pageable);
+		Page<Publisher> publishers = publisherService.getPublishers(form.withLanguage(language), pageable);
 		model.addAttribute("publishers", publishers);
 		model.addAttribute("pageable", pageable);
 		Pagination<Publisher> pagination = new Pagination<>(publishers, servletRequest);

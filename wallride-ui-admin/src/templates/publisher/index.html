@@ -130,8 +130,8 @@
 						<div id="search-form" class="input-group mb-2">
 							<input type="text" name="keyword" th:value="*{keyword}" class="form-control" th:attr="placeholder=#{Keywords}"/>
 							<div class="input-group-append">
-								<button class="btn btn-success" type="submit" formmethod="post"
-										th:formaction="@{__${ADMIN_PATH}__/publisher/search}">
+								<button id="search-button" class="btn btn-success"
+										th:attr="data-action=@{__${ADMIN_PATH}__/publisher/search}">
 									Go
 								</button>
 							</div>
@@ -149,20 +149,20 @@
 							<ul class="pagination pagination-sm">
 								<li th:classappend="${pagination.hasPreviousPage() ? '' : 'disabled'}" class="page-item">
 									<!-- <a th:href="@{${pagination.url}(page=${pagination.previousPageNumber})}" th:text="#{Prev}" class="page-link">Prev</a> -->
-									<button class="page-link" type="submit" formmethod="post" th:formaction="@{${pagination.url}(page=${pagination.previousPageNumber})}">
+									<button class="page-link" th:attr="data-action=@{${pagination.url}(page=${pagination.previousPageNumber})}">
 										<span th:text="#{Prev}">Prev</span>
 									</button>
 								</li>
 								<li th:each="p : ${pagination.getPageables(pageable)}" th:classappend="${p.pageNumber eq pagination.currentPageNumber ? 'active' : ''}" class="page-item">
 									<!-- <a th:href="@{${pagination.url}(page=${p.pageNumber})}" th:text="${p.pageNumber + 1}" class="page-link">
 									</a> -->
-									<button class="page-link" type="submit" formmethod="post" th:formaction="@{${pagination.url}(page=${p.pageNumber})}">
+									<button class="page-link" th:attr="data-action=@{${pagination.url}(page=${p.pageNumber})}">
 										<span th:text="${p.pageNumber + 1}">Prev</span>
 									</button>
 								</li>
 								<li th:classappend="${pagination.hasNextPage() ? '' : 'disabled'}" class="page-item">
 									<!-- <a th:href="@{${pagination.url}(page=${pagination.nextPageNumber})}" th:text="#{Next}" class="page-link">Next</a> -->
-									<button class="page-link" type="submit" formmethod="post" th:formaction="@{${pagination.url}(page=${pagination.nextPageNumber})}">
+									<button class="page-link" th:attr="data-action=@{${pagination.url}(page=${pagination.nextPageNumber})}">
 										<span th:text="#{Next}">Next</span>
 									</button>
 								</li>
@@ -184,6 +184,14 @@
 
 							let $form = $self.closest('form');
 							$form.attr('action', $self.attr('href'));
+							$form.submit();
+						}).on('click', '.page-link, #search-button', function(e) {
+							e.preventDefault();
+							logger.warn('Click button');
+							let $self = $(this);
+							let $form = $self.closest('form');
+
+							$form.attr('action', $self.data('action'));
 							$form.submit();
 						});
 						$('#wr-page-header').on('click', '[data-action]', function(e) {

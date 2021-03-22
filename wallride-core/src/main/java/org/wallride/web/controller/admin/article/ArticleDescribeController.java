@@ -19,6 +19,7 @@ package org.wallride.web.controller.admin.article;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,9 +30,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.wallride.domain.Article;
 import org.wallride.service.ArticleService;
+import org.wallride.support.LuceneUtils;
 import org.wallride.web.support.HttpNotFoundException;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManagerFactory;
+
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -44,6 +49,9 @@ public class ArticleDescribeController {
 
 	@Inject
 	private ConversionService conversionService;
+
+	@Autowired
+    private EntityManagerFactory entityManagerFactory;
 
 	@ModelAttribute("query")
 	public String query(@RequestParam(required = false) String query) {
@@ -60,6 +68,17 @@ public class ArticleDescribeController {
 		Article article = articleService.getArticleById(id);
 		if (article == null) {
 			throw new HttpNotFoundException();
+		}
+
+		if (query != null) {
+			String keyword = getKeyword(query);
+			if (!keyword.isEmpty()) {
+				List<Article> articles = new ArrayList<>();
+				articles.add(article);
+				List<Article> highlightedArticles = LuceneUtils.highlight(entityManagerFactory.createEntityManager(),
+						keyword, articles, new String[] {"title", "body"});
+				article = highlightedArticles.get(0);
+			}
 		}
 
 		if (!article.getLanguage().equals(language)) {
@@ -117,5 +136,16 @@ public class ArticleDescribeController {
 		Article article = articleService.getArticleById(id, language);
 		model.addAttribute("article", article);
 		return "article/describe::delete-form";
+	}
+
+	private String getKeyword(String query) {
+		String[] params = query.split("&");
+		for (String param : params) {
+			if (param.startsWith("keyword")) {
+				int index = param.indexOf("=");
+				return param.substring(index + 1);
+			}
+		}
+		return "";
 	}
 }

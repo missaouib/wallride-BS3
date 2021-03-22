@@ -15,7 +15,7 @@
 								<a class="btn btn-sm btn-default" th:href="@{__${ADMIN_PATH}__/articles/index(query=${query})}"><span data-feather="arrow-left"></span></a>
 							</div>
 							<div class="">
-								<h1 th:text="${article.title}?:'(No Titled)'">(No Titled)</h1>
+								<h1 th:utext="${article.title}?:'(No Titled)'">(No Titled)</h1>
 								<p class="small"><a th:href="@{__${WEBSITE_PATH}____${#posts.path(article)}__}" th:text="@{__${WEBSITE_PATH}____${#posts.path(article)}__}" th:if="${#strings.toString(article.status) eq 'PUBLISHED'}" target="_blank"></a></p>
 							</div>
 						</div>

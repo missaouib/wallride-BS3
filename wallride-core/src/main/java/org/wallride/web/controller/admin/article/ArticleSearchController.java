@@ -16,12 +16,15 @@
 
 package org.wallride.web.controller.admin.article;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -34,13 +37,16 @@ import org.springframework.web.util.UriComponentsBuilder;
 import org.wallride.domain.Article;
 import org.wallride.domain.Post;
 import org.wallride.service.ArticleService;
+import org.wallride.support.LuceneUtils;
 import org.wallride.web.support.ControllerUtils;
 import org.wallride.web.support.Pagination;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManagerFactory;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -52,6 +58,9 @@ public class ArticleSearchController {
 
     @Inject
     private ConversionService conversionService;
+
+    @Autowired
+    private EntityManagerFactory entityManagerFactory;
 
     @ModelAttribute("countAll")
     public long countAll(@PathVariable String language) {
@@ -103,6 +112,14 @@ public class ArticleSearchController {
                 .build();
         if (!StringUtils.isEmpty(uriComponents.getQuery())) {
             model.addAttribute("query", URLDecoder.decode(uriComponents.getQuery(), "UTF-8"));
+
+            List<Article> highlightedArticles = LuceneUtils.highlight(entityManagerFactory.createEntityManager(),
+            form.getKeyword(), articles.getContent(), new String[] {"title", "body"});
+            Assert.isTrue(highlightedArticles.size() == articles.getContent().size(),
+                    "The number of highlighted articles should be equal to the number of search results");
+
+            Page<Article> highlightedArticlesPage = new PageImpl<>(highlightedArticles, pageable, highlightedArticles.size());
+            model.addAttribute("articles", highlightedArticlesPage);
         }
 
         return "article/index";

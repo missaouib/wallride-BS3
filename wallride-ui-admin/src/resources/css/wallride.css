@@ -895,7 +895,7 @@ img.fr-dii {
 
 /***** search highlighting *****/
 .highlight {
-	color: red;
+	background-color: yellow;
 }
 
 .input-group-text {

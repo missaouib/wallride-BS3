@@ -42,6 +42,16 @@ public class PublisherService {
 	@Resource
 	private PublisherRepository publisherRepository;
 
+	public enum Actions {
+		ADD,
+		EDIT,
+		SAVE,
+		UPDATE,
+		DELETE,
+		SHOW,
+		CANCEL;
+	}
+
 	public Publisher createPublisher(PublisherForm form, AuthorizedUser createdBy) {
 		if (form.getCode() == null) {
 			throw new EmptyCodeException();
