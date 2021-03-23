@@ -41,6 +41,7 @@ public class PublisherForm implements Serializable {
 	private String notes;
 	private String language;
 	private String keyword;
+	private boolean confirmed;
 
 	public Long getId() {
 		return id;
@@ -116,6 +117,14 @@ public class PublisherForm implements Serializable {
 		return this;
 	}
 
+	public boolean isConfirmed() {
+		return confirmed;
+	}
+
+	public void setConfirmed(boolean confirmed) {
+		this.confirmed = confirmed;
+	}
+
 	public boolean isSearchRequestEmpty() {
 		if (StringUtils.hasText(getKeyword())) {
 			return false;
@@ -161,8 +170,8 @@ public class PublisherForm implements Serializable {
 
 	@Override
 	public String toString() {
-		return "PublisherRequest [code=" + code + ", country=" + country + ", id=" + id
-				+ ", keyword=" + keyword + ", language=" + language + ", name=" + name + ", notes="
-				+ notes + ", webpage=" + webpage + "]";
+		return "PublisherForm [code=" + code + ", confirmed=" + confirmed + ", country=" + country + ", id=" + id
+				+ ", keyword=" + keyword + ", language=" + language + ", name=" + name + ", notes=" + notes
+				+ ", webpage=" + webpage + "]";
 	}
 }

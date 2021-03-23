@@ -102,7 +102,7 @@
 
 							$customFieldForm.on('change', 'select[name="type"]', function() {
 								var value = $(this).val().toString();
-								//logger.warn('customFieldForm value %s', value);
+								//logger.info('customFieldForm value %s', value);
 								if (value == 'SELECTBOX' || value == 'CHECKBOX' || value == 'RADIO') {
 									//$fieldOption.show();
 									$fieldOption.removeClass('d-none d-sm-none');

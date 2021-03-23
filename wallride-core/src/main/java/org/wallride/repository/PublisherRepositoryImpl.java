@@ -30,8 +30,6 @@ import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -42,16 +40,39 @@ import org.wallride.web.controller.admin.publisher.PublisherForm;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PublisherRepositoryImpl implements PublisherRepositoryCustom {
 
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	private static Logger logger = LoggerFactory.getLogger(PublisherRepositoryImpl.class);
+	@Override
+	public Page<Publisher> search(PublisherForm form) {
+		return search(form, Pageable.unpaged());
+	}
 
 	@Override
-	public Page<Publisher> search(PublisherForm request, Pageable pageable) {
+	public Page<Publisher> search(PublisherForm form, Pageable pageable) {
+		Session session = (Session) entityManager.getDelegate();
+		Criteria criteria = session.createCriteria(Publisher.class);
+
+		FullTextQuery persistenceQuery = buildFullTextQuery(form, pageable, criteria);
+		int resultSize = persistenceQuery.getResultSize();
+		List<Publisher> results = persistenceQuery.getResultList();
+		return new PageImpl<>(results, pageable, resultSize);
+	}
+
+	@Override
+	public List<Long> searchForId(PublisherForm form) {
+		FullTextQuery persistenceQuery = buildFullTextQuery(form, Pageable.unpaged(), null);
+		persistenceQuery.setProjection("id");
+		List<Object[]> results = persistenceQuery.getResultList();
+		List<Long> nos = results.stream().map(result -> (long) result[0]).collect(Collectors.toList());
+		return nos;
+	}
+
+	public FullTextQuery buildFullTextQuery(PublisherForm form, Pageable pageable, Criteria criteria) {
 		FullTextEntityManager fullTextEntityManager =  Search.getFullTextEntityManager(entityManager);
 		QueryBuilder qb = fullTextEntityManager.getSearchFactory()
 				.buildQueryBuilder()
@@ -62,7 +83,7 @@ public class PublisherRepositoryImpl implements PublisherRepositoryCustom {
 		BooleanJunction<BooleanJunction> junction = qb.bool();
 		junction.must(qb.all().createQuery());
 
-		if (StringUtils.hasText(request.getKeyword())) {
+		if (StringUtils.hasText(form.getKeyword())) {
 			Analyzer analyzer = fullTextEntityManager.getSearchFactory().getAnalyzer("synonyms");
 			String[] fields = new String[] {
 					"code", "name"
@@ -71,11 +92,11 @@ public class PublisherRepositoryImpl implements PublisherRepositoryCustom {
 			parser.setDefaultOperator(QueryParser.Operator.AND);
 			Query query = null;
 			try {
-				query = parser.parse(request.getKeyword());
+				query = parser.parse(form.getKeyword());
 			}
 			catch (ParseException e1) {
 				try {
-					query = parser.parse(QueryParser.escape(request.getKeyword()));
+					query = parser.parse(QueryParser.escape(form.getKeyword()));
 				}
 				catch (ParseException e2) {
 					throw new RuntimeException(e2);
@@ -84,16 +105,11 @@ public class PublisherRepositoryImpl implements PublisherRepositoryCustom {
 			junction.must(query);
 		}
 
-		if (StringUtils.hasText(request.getLanguage())) {
-			logger.warn("request.getLanguage() = {}", request.getLanguage());
-			junction.must(qb.keyword().onField("language").matching(request.getLanguage()).createQuery());
+		if (StringUtils.hasText(form.getLanguage())) {
+			junction.must(qb.keyword().onField("language").matching(form.getLanguage()).createQuery());
 		}
 
 		Query searchQuery = junction.createQuery();
-		logger.warn("searchQuery = {}", searchQuery);
-
-		Session session = (Session) entityManager.getDelegate();
-		Criteria criteria = session.createCriteria(Publisher.class);
 
 		Sort sort = new Sort(new SortField("sortCode", SortField.Type.STRING));
 
@@ -101,13 +117,10 @@ public class PublisherRepositoryImpl implements PublisherRepositoryCustom {
 				.createFullTextQuery(searchQuery, Publisher.class)
 				.setCriteriaQuery(criteria)
 				.setSort(sort);
-		persistenceQuery.setFirstResult((int) pageable.getOffset());
-		persistenceQuery.setMaxResults(pageable.getPageSize());
-
-		int resultSize = persistenceQuery.getResultSize();
-
-		@SuppressWarnings("unchecked")
-		List<Publisher> results = persistenceQuery.getResultList();
-		return new PageImpl<>(results, pageable, resultSize);
+		if (pageable.isPaged()) {
+			persistenceQuery.setFirstResult((int) pageable.getOffset());
+			persistenceQuery.setMaxResults(pageable.getPageSize());
+		}
+		return persistenceQuery;
 	}
 }

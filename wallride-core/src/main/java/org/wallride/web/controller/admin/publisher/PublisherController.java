@@ -56,7 +56,6 @@ import org.springframework.http.ResponseEntity;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ValidationException;
 import static org.wallride.service.PublisherService.*;
@@ -74,6 +73,7 @@ import java.util.Set;
 
 @Controller
 @RequestMapping("/{language}/publisher")
+@SessionAttributes(names = {"publishers", "pageable", "pagination"})
 public class PublisherController {
 
 	@Inject
@@ -126,14 +126,10 @@ public class PublisherController {
 		model.addAttribute("pageable", pageable);
 		model.addAttribute("pagination", new Pagination<>(publishers, servletRequest));
 
-		logger.info("/search form = {}", form);
-		// if (form.getId() != null) {
-		// 	Publisher selectedPublisher = publisherService.getPublisherById(form.getId());
-		// 	model.addAttribute("selectedPublisher", selectedPublisher);
-		// 	PublisherForm editForm = PublisherForm.createFormfromDomainObject(selectedPublisher);
-		// 	model.addAttribute("form", editForm.withKeyword(form.getKeyword()));
-		// 	logger.info("/search editForm = {}", editForm);
-		// }
+		if (form.getId() != null) {
+			Publisher selectedPublisher = publisherService.getPublisherById(form.getId());
+			model.addAttribute("selectedPublisher", selectedPublisher);
+		}
 
 		Set<String> buttons = new HashSet<>();
 		buttons.add(Actions.ADD.toString());
@@ -150,11 +146,12 @@ public class PublisherController {
 			@RequestParam long id,
 			@ModelAttribute("form") PublisherForm form,
 			BindingResult result,
-			@PageableDefault(ITEMS_PER_PAGE) Pageable pageable,
+			@ModelAttribute("publishers") Page<Publisher> publishers,
+			@ModelAttribute("pageable") Pageable pageable,
+			@ModelAttribute("pagination") Pagination<Publisher> pagination,
 			Model model,
 			RedirectAttributes redirectAttributes,
 			HttpServletRequest servletRequest) {
-		form.setLanguage(language);
 		Publisher publisher = publisherService.getPublisherById(id);
 		model.addAttribute("selectedPublisher", publisher);
 
@@ -166,12 +163,6 @@ public class PublisherController {
 
 		PublisherForm editForm = PublisherForm.createFormfromDomainObject(publisher);
 		model.addAttribute("form", editForm.withKeyword(form.getKeyword()));
-
-		Page<Publisher> publishers = publisherService.getPublishers(editForm, pageable);
-		model.addAttribute("publishers", publishers);
-		model.addAttribute("pageable", pageable);
-		model.addAttribute("pagination", new Pagination<>(publishers, servletRequest));
-
 		return "publisher/index";
 	}
 
@@ -180,23 +171,14 @@ public class PublisherController {
 			@PathVariable String language,
 			@ModelAttribute("form") PublisherForm form,
 			BindingResult result,
-			@PageableDefault(ITEMS_PER_PAGE) Pageable pageable,
+			@ModelAttribute("publishers") Page<Publisher> publishers,
+			@ModelAttribute("pageable") Pageable pageable,
+			@ModelAttribute("pagination") Pagination<Publisher> pagination,
 			Model model,
-			RedirectAttributes redirectAttributes,
 			HttpServletRequest servletRequest)
 			throws BindException {
-		Page<Publisher> publishers = publisherService.getPublishers(form.withLanguage(language), pageable);
-		model.addAttribute("publishers", publishers);
-		model.addAttribute("pageable", pageable);
-		model.addAttribute("pagination", new Pagination<>(publishers, servletRequest));
-
-		PublisherForm newForm;
-		if (!publisherService.isFormNotBlank(form)) {
-			newForm = new PublisherForm();
-		} else {
-			// This covers the case of navigating to another page.
-			newForm = form;
-		}
+		PublisherForm newForm = form;
+		if (!publisherService.isFormNotBlank(form)) newForm = new PublisherForm();
 		model.addAttribute("form", newForm);
 
 		Set<String> buttons = new HashSet<>();
@@ -212,17 +194,13 @@ public class PublisherController {
 			@PathVariable String language,
 			@Validated(PublisherForm.CreateValidations.class) @ModelAttribute("form") PublisherForm form,
 			BindingResult errors,
-			@PageableDefault(ITEMS_PER_PAGE) Pageable pageable,
+			@ModelAttribute("publishers") Page<Publisher> publishers,
+			@ModelAttribute("pageable") Pageable pageable,
+			@ModelAttribute("pagination") Pagination<Publisher> pagination,
 			AuthorizedUser authorizedUser,
 			RedirectAttributes redirectAttributes,
 			Model model,
 			HttpServletRequest servletRequest) {
-		logger.info("/save form = {}", form);
-		Page<Publisher> publishers = publisherService.getPublishers(form.withLanguage(language), pageable);
-		model.addAttribute("publishers", publishers);
-		model.addAttribute("pageable", pageable);
-		model.addAttribute("pagination", new Pagination<>(publishers, servletRequest));
-
 		Set<String> buttons = new HashSet<>();
 		buttons.add(Actions.SAVE.toString());
 		buttons.add(Actions.CANCEL.toString());
@@ -257,7 +235,9 @@ public class PublisherController {
 			@PathVariable String language,
 			@ModelAttribute("form") PublisherForm form,
 			Model model,
-			@PageableDefault(ITEMS_PER_PAGE) Pageable pageable,
+			@ModelAttribute("publishers") Page<Publisher> publishers,
+			@ModelAttribute("pageable") Pageable pageable,
+			@ModelAttribute("pagination") Pagination<Publisher> pagination,
 			RedirectAttributes redirectAttributes,
 			HttpServletRequest servletRequest) {
 		if (form.getId() == null) {
@@ -273,20 +253,12 @@ public class PublisherController {
 		buttons.add(Actions.CANCEL.toString());
 		model.addAttribute("buttons", buttons);
 
-		PublisherForm newForm;
+		PublisherForm newForm = form;
 		if (!publisherService.isFormNotBlank(form)) {
 			newForm = PublisherForm.createFormfromDomainObject(publisher)
 					.withKeyword(form.getKeyword());
-		} else {
-			// This covers the case of navigating to another page.
-			newForm = form;
 		}
 		model.addAttribute("form", newForm);
-
-		Page<Publisher> publishers = publisherService.getPublishers(newForm, pageable);
-		model.addAttribute("publishers", publishers);
-		model.addAttribute("pageable", pageable);
-		model.addAttribute("pagination", new Pagination<>(publishers, servletRequest));
 
 		return "publisher/index";
 	}
@@ -297,16 +269,12 @@ public class PublisherController {
 			@Validated(PublisherForm.UpdateValidations.class) @ModelAttribute("form") PublisherForm form,
 			BindingResult errors,
 			Model model,
-			@PageableDefault(ITEMS_PER_PAGE) Pageable pageable,
+			@ModelAttribute("publishers") Page<Publisher> publishers,
+			@ModelAttribute("pageable") Pageable pageable,
+			@ModelAttribute("pagination") Pagination<Publisher> pagination,
 			AuthorizedUser authorizedUser,
 			RedirectAttributes redirectAttributes,
 			HttpServletRequest servletRequest) {
-		Page<Publisher> publishers = publisherService.getPublishers(form.withLanguage(language), pageable);
-		model.addAttribute("publishers", publishers);
-		model.addAttribute("pageable", pageable);
-		Pagination<Publisher> pagination = new Pagination<>(publishers, servletRequest);
-		model.addAttribute("pagination", pagination);
-
 		Set<String> buttons = new HashSet<>();
 		buttons.add(Actions.UPDATE.toString());
 		buttons.add(Actions.DELETE.toString());
@@ -348,6 +316,7 @@ public class PublisherController {
 			@ModelAttribute("form") PublisherForm form,
 			BindingResult errors,
 			@RequestParam int page,
+			@ModelAttribute("publishers") Page<Publisher> publishers,
 			Model model,
 			AuthorizedUser authorizedUser,
 			RedirectAttributes redirectAttributes) {
@@ -379,11 +348,18 @@ public class PublisherController {
 		redirectAttributes.addFlashAttribute("deletedPublisher", publisher);
 		redirectAttributes.addFlashAttribute("errorMessages", errorMessages);
 		redirectAttributes.addAttribute("page", page);
+
+		Publisher firstInPage = publishers.getContent().get(0);
+		if (firstInPage != null) {
+			redirectAttributes.addAttribute("id", firstInPage.getId());
+			return "redirect:/_admin/{language}/publisher/show";
+		}
 		return "redirect:/_admin/{language}/publisher/search";
 	}
 
-	@RequestMapping(value = "/report", method = RequestMethod.GET)
+	@RequestMapping(value = "/report", method = RequestMethod.POST)
 	public ResponseEntity<byte[]> getReportPdf(
+			@ModelAttribute("form") PublisherForm form,
 			@PathVariable String language,
 			HttpServletRequest request) {
 		// Taken from http://blog.triadworks.com.br/jasperreports-gerando-relatorios-pdf-na-web
@@ -402,16 +378,14 @@ public class PublisherController {
 
 		JasperPrint jasperPrint = null;
 		try {
-			// TODO move to service/repository
-			TypedQuery<Publisher> query = entityManager.createQuery("FROM Publisher ORDER BY language, code", Publisher.class);
-			List<Publisher> results = query.getResultList();
+			List<Publisher> results = publisherService.getPublishers(form).getContent();
 			JRDataSource beanDataSource = new JRBeanCollectionDataSource(results);
 			jasperPrint = JasperFillManager.fillReport(jasper, params, beanDataSource);
 		} catch (JRException e) {
 			e.printStackTrace();
 			logger.warn("Could not fill the report from the data source. {}", e);
 		}
-	
+
 		// Copied from https://stackoverflow.com/a/16656382
 		String filename = "publishersReport.pdf";
 		HttpHeaders headers = new HttpHeaders();

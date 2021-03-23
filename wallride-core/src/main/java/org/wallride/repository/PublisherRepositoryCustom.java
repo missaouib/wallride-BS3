@@ -16,6 +16,8 @@
 
 package org.wallride.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.wallride.domain.Publisher;
@@ -23,5 +25,7 @@ import org.wallride.web.controller.admin.publisher.PublisherForm;
 
 public interface PublisherRepositoryCustom {
 
-	Page<Publisher> search(PublisherForm request, Pageable pageable);
+	Page<Publisher> search(PublisherForm form);
+	List<Long> searchForId(PublisherForm form);
+	Page<Publisher> search(PublisherForm form, Pageable pageable);
 }

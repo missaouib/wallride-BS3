@@ -17,7 +17,6 @@
 package org.wallride.service;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,12 +27,12 @@ import org.wallride.exception.EmptyCodeException;
 import org.wallride.exception.ServiceException;
 import org.wallride.repository.PublisherRepository;
 import org.wallride.support.AuthorizedUser;
-import org.wallride.web.controller.admin.publisher.PublisherController;
 import org.wallride.web.controller.admin.publisher.PublisherForm;
 
 import javax.annotation.Resource;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -125,9 +124,12 @@ public class PublisherService {
 		return publisherRepository.findOneById(id);
 	}
 
+	public List<Long> getPublisherIds(PublisherForm form) {
+		return publisherRepository.searchForId(form);
+	}
+
 	public Page<Publisher> getPublishers(PublisherForm form) {
-		Pageable pageable = PageRequest.of(0, PublisherController.ITEMS_PER_PAGE);
-		return getPublishers(form, pageable);
+		return publisherRepository.search(form);
 	}
 
 	public Page<Publisher> getPublishers(PublisherForm form, Pageable pageable) {
