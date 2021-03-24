@@ -374,7 +374,15 @@ public class PublisherController {
 
 		// Taken from https://stackoverflow.com/a/27532493
 		Map<String, Object> params = new HashMap<>();
-		params.put("REPORT_RESOURCE_BUNDLE", ResourceBundle.getBundle("jasperreport/publishers", new Locale(language)));
+
+		Locale locale;
+		String[] localeInfo = language.split("-");
+		if (localeInfo.length == 2) {
+			locale = new Locale(localeInfo[0], localeInfo[1]);
+		} else {
+			locale = new Locale(localeInfo[0]);
+		}
+		params.put("REPORT_RESOURCE_BUNDLE", ResourceBundle.getBundle("messages/messages", locale));
 
 		JasperPrint jasperPrint = null;
 		try {
