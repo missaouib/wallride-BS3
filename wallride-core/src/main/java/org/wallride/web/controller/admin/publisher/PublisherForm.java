@@ -31,7 +31,7 @@ public class PublisherForm implements Serializable {
 
 	private static final long serialVersionUID = 7023828135033954866L;
 
-    interface CreateValidations {}
+	interface CreateValidations {}
 	interface UpdateValidations {}
 	@NotNull(groups = {UpdateValidations.class}) private Long id;
 	@NotNull(groups = {CreateValidations.class, UpdateValidations.class}) private String code;
