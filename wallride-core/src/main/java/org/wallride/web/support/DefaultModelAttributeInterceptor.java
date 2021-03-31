@@ -16,8 +16,6 @@
 
 package org.wallride.web.support;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -44,8 +42,6 @@ public class DefaultModelAttributeInterceptor extends HandlerInterceptorAdapter 
 
 	private BlogService blogService;
 
-	private static Logger logger = LoggerFactory.getLogger(DefaultModelAttributeInterceptor.class);
-
 	public void setBlogService(BlogService blogService) {
 		this.blogService = blogService;
 	}
@@ -71,7 +67,7 @@ public class DefaultModelAttributeInterceptor extends HandlerInterceptorAdapter 
 			}
 		}
 
-		String currentLanguage = LocaleContextHolder.getLocale().toLanguageTag();
+		String currentLanguage = LocaleContextHolder.getLocale().toString();
 
 		mv.addObject("LANGUAGES", languages.toArray(new String[languages.size()]));
 		mv.addObject("LANGUAGE_LINKS", buildLanguageLinks(currentLanguage, languages, request));

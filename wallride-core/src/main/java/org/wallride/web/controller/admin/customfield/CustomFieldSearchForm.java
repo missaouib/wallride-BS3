@@ -51,7 +51,7 @@ public class CustomFieldSearchForm implements Serializable {
 	public CustomFieldSearchRequest toCustomFieldSearchRequest() {
 		CustomFieldSearchRequest request = new CustomFieldSearchRequest();
 		request.setKeyword(getKeyword());
-		request.setLanguage(LocaleContextHolder.getLocale().toLanguageTag());
+		request.setLanguage(LocaleContextHolder.getLocale().toString());
 		return request;
 	}
 

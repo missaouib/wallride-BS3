@@ -114,7 +114,7 @@ public class Articles {
 		}
 
 		private ArticleSearchRequest buildArticleSearchRequest() {
-			ArticleSearchRequest request = new ArticleSearchRequest(context.getLocale().toLanguageTag())
+			ArticleSearchRequest request = new ArticleSearchRequest(context.getLocale().toString())
 					.withStatus(this.status)
 					.withKeyword(this.keyword)
 					.withCategoryIds(this.categoryIds)

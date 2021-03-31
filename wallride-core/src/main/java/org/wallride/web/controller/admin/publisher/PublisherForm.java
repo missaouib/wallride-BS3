@@ -156,7 +156,7 @@ public class PublisherForm implements Serializable {
 	public PublisherForm createPublisherSearchRequest() {
 		PublisherForm searchRequest = new PublisherForm();
 		searchRequest.setKeyword(getKeyword());
-		searchRequest.setLanguage(LocaleContextHolder.getLocale().toLanguageTag());
+		searchRequest.setLanguage(LocaleContextHolder.getLocale().toString());
 		return searchRequest;
 	}
 

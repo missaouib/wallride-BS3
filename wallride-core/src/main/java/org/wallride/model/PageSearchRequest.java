@@ -43,7 +43,7 @@ public class PageSearchRequest implements Serializable {
 	private String language;
 
 	public PageSearchRequest() {
-		this.language = LocaleContextHolder.getLocale().toLanguageTag();
+		this.language = LocaleContextHolder.getLocale().toString();
 	}
 
 	public PageSearchRequest(BlogLanguage blogLanguage) {

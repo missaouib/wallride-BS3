@@ -44,7 +44,7 @@ public class ArticleSearchRequest implements Serializable {
 	private String language;
 
 	public ArticleSearchRequest() {
-		this.language = LocaleContextHolder.getLocale().toLanguageTag();
+		this.language = LocaleContextHolder.getLocale().toString();
 	}
 
 	public ArticleSearchRequest(String language) {

@@ -74,6 +74,6 @@ public class Users {
 		Blog blog = (Blog) context.getVariable("BLOG");
 		return String.format("%s | %s",
 				user.getNickname(),
-				blog.getTitle(context.getLocale().toLanguageTag()));
+				blog.getTitle(context.getLocale().toString()));
 	}
 }

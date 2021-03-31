@@ -28,7 +28,7 @@ public class TagSearchRequest implements Serializable {
 	private String language;
 
 	public TagSearchRequest() {
-		this.language = LocaleContextHolder.getLocale().toLanguageTag();
+		this.language = LocaleContextHolder.getLocale().toString();
 	}
 
 	public String getKeyword() {

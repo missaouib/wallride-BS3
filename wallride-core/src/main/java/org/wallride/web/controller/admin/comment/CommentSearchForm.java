@@ -51,7 +51,7 @@ public class CommentSearchForm implements Serializable {
 	public CommentSearchRequest toCommentSearchRequest() {
 		CommentSearchRequest request = new CommentSearchRequest();
 		request.setKeyword(getKeyword());
-		request.setLanguage(LocaleContextHolder.getLocale().toLanguageTag());
+		request.setLanguage(LocaleContextHolder.getLocale().toString());
 		return request;
 	}
 

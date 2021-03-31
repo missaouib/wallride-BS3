@@ -114,7 +114,7 @@
 						</ul>
 					</li>
 					<li class="nav-item dropdown">
-						<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown"><span data-feather="globe"></span> <span th:text="${#messages.msg('Language.' + #locale.toLanguageTag())}"></span></b></a>
+						<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown"><span data-feather="globe"></span> <span th:text="${#messages.msg('Language.' + #locale.toString())}"></span></b></a>
 						<ul class="dropdown-menu">
 							<li class="disabled dropdown-item"><a href="#"><span th:text="#{Languages}">Languages</span></a></li>
 							<li th:each="key : ${LANGUAGE_LINKS.keySet()} " class="dropdown-item"><a th:href="${LANGUAGE_LINKS.get(key)}"><span th:text="${#messages.msg('Language.' + key)}">English</span> </a></li>

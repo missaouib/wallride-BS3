@@ -18,6 +18,8 @@ package org.wallride.domain;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.search.annotations.Analyze;
+import org.hibernate.search.annotations.Field;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -39,6 +41,7 @@ public abstract class NavigationItem extends DomainObject<Long> {
 	private int sort;
 
 	@Column(length = 6, nullable=false)
+	@Field(analyze = Analyze.NO)
 	private String language;
 
 	@ManyToOne

@@ -28,7 +28,7 @@ public class CategorySearchRequest implements Serializable {
 	private String language;
 
 	public CategorySearchRequest() {
-		this.language = LocaleContextHolder.getLocale().toLanguageTag();
+		this.language = LocaleContextHolder.getLocale().toString();
 	}
 
 	public String getKeyword() {

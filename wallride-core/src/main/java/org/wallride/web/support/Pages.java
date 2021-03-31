@@ -151,7 +151,7 @@ public class Pages {
 		}
 
 		private PageSearchRequest buildPageSearchRequest() {
-			PageSearchRequest request = new PageSearchRequest(context.getLocale().toLanguageTag())
+			PageSearchRequest request = new PageSearchRequest(context.getLocale().toString())
 					.withKeyword(this.keyword)
 					.withCategoryIds(this.categoryIds)
 					.withCategoryCodes(this.categoryCodes)

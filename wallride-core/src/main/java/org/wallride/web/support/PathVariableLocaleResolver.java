@@ -16,8 +16,7 @@
 
 package org.wallride.web.support;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
 import org.wallride.domain.Blog;
@@ -32,8 +31,6 @@ import java.util.Map;
 public class PathVariableLocaleResolver implements LocaleResolver {
 
 	private BlogService blogService;
-
-	private static Logger logger = LoggerFactory.getLogger(PathVariableLocaleResolver.class);
 
 	public void setBlogService(BlogService blogService) {
 		this.blogService = blogService;
@@ -64,7 +61,7 @@ public class PathVariableLocaleResolver implements LocaleResolver {
 			}
 		}
 
-		return (currentLanguage != null) ? Locale.forLanguageTag(currentLanguage) : request.getLocale();
+		return (currentLanguage != null) ? StringUtils.parseLocaleString(currentLanguage) : request.getLocale();
 	}
 
 	@Override

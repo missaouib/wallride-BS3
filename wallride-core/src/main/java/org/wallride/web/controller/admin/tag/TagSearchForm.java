@@ -37,7 +37,7 @@ public class TagSearchForm implements Serializable {
 		TagSearchRequest.Builder builder = new TagSearchRequest.Builder();
 		return builder
 				.keyword(keyword)
-				.language(LocaleContextHolder.getLocale().toLanguageTag())
+				.language(LocaleContextHolder.getLocale().toString())
 				.build();
 	}
 }

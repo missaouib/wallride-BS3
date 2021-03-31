@@ -81,12 +81,12 @@ public class BlogLanguage extends DomainObject<Long> {
 
 	@Override
 	public String print() {
-		return getBlog().getCode() + "-" + getLanguage();
+		return getBlog().getCode() + "_" + getLanguage();
 	}
 
 	@Override
 	public String toString() {
-		return getBlog().getCode() + "-" + getLanguage();
+		return getBlog().getCode() + "_" + getLanguage();
 	}
 
 	@Override

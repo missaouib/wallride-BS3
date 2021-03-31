@@ -126,7 +126,7 @@ public class UserService {
 
 		try {
 			Blog blog = blogService.getBlogById(Blog.DEFAULT_ID);
-			String blogTitle = blog.getTitle(LocaleContextHolder.getLocale().toLanguageTag());
+			String blogTitle = blog.getTitle(LocaleContextHolder.getLocale().toString());
 
 			ServletUriComponentsBuilder builder = ServletUriComponentsBuilder.fromCurrentContextPath();
 			if (blog.isMultiLanguage()) {
@@ -220,7 +220,7 @@ public class UserService {
 
 		try {
 			Blog blog = blogService.getBlogById(Blog.DEFAULT_ID);
-			String blogTitle = blog.getTitle(LocaleContextHolder.getLocale().toLanguageTag());
+			String blogTitle = blog.getTitle(LocaleContextHolder.getLocale().toString());
 
 			ServletUriComponentsBuilder builder = ServletUriComponentsBuilder.fromCurrentContextPath();
 			if (blog.isMultiLanguage()) {
@@ -334,7 +334,7 @@ public class UserService {
 
 		Blog blog = blogService.getBlogById(Blog.DEFAULT_ID);
 		for (UserInvitation invitation : invitations) {
-			String websiteTitle = blog.getTitle(LocaleContextHolder.getLocale().toLanguageTag());
+			String websiteTitle = blog.getTitle(LocaleContextHolder.getLocale().toString());
 			String signupLink = ServletUriComponentsBuilder.fromCurrentContextPath()
 					.path("/_admin/signup")
 					.queryParam("token", invitation.getToken())
@@ -375,7 +375,7 @@ public class UserService {
 		invitation = userInvitationRepository.saveAndFlush(invitation);
 
 		Blog blog = blogService.getBlogById(Blog.DEFAULT_ID);
-		String websiteTitle = blog.getTitle(LocaleContextHolder.getLocale().toLanguageTag());
+		String websiteTitle = blog.getTitle(LocaleContextHolder.getLocale().toString());
 		String signupLink = ServletUriComponentsBuilder.fromCurrentContextPath()
 				.path("/_admin/signup")
 				.queryParam("token", invitation.getToken())

@@ -102,7 +102,7 @@ public class PageSearchForm implements Serializable {
 		}
 		request.withAuthorId(getAuthorId());
 		request.withStatus(getStatus());
-		request.withLanguage(LocaleContextHolder.getLocale().toLanguageTag());
+		request.withLanguage(LocaleContextHolder.getLocale().toString());
 		return request;
 	}
 

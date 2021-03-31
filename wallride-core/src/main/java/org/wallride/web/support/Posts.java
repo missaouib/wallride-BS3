@@ -92,7 +92,7 @@ public class Posts {
 
 	public String ogSiteName(Post post) {
 		Blog blog = (Blog) context.getVariable("BLOG");
-		return blog.getTitle(context.getLocale().toLanguageTag());
+		return blog.getTitle(context.getLocale().toString());
 	}
 
 	public String ogTitle(Post post) {
@@ -128,7 +128,7 @@ public class Posts {
 		Blog blog = (Blog) context.getVariable("BLOG");
 		return String.format("%s | %s",
 				post.getTitle(),
-				blog.getTitle(context.getLocale().toLanguageTag()));
+				blog.getTitle(context.getLocale().toString()));
 	}
 
 	public String thumbnail(Post post) {

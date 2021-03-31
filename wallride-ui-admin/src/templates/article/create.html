@@ -137,7 +137,7 @@
 								</div>
 								<div class="alert alert-info" th:if="${original ne null}">
 									<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-									<span th:text="#{LanguageNotFound(${#messages.msg('Language.' + #locale.toLanguageTag())}, ${original.title})}">There is no {0} version of "{1}".</span>
+									<span th:text="#{LanguageNotFound(${#messages.msg('Language.' + #locale.toString())}, ${original.title})}">There is no {0} version of "{1}".</span>
 								</div>
 								<fieldset>
 									<div class="form-group">

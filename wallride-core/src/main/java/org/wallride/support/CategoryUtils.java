@@ -39,7 +39,7 @@ public class CategoryUtils {
 	}
 
 	public List<Category> getAllCategories(boolean includeNoPosts) {
-		return categoryService.getCategories(LocaleContextHolder.getLocale().toLanguageTag(), includeNoPosts);
+		return categoryService.getCategories(LocaleContextHolder.getLocale().toString(), includeNoPosts);
 	}
 
 	public List<TreeNode<Category>> getNodes() {
@@ -47,7 +47,7 @@ public class CategoryUtils {
 	}
 
 	public List<TreeNode<Category>> getNodes(boolean includeNoPosts) {
-		Collection<Category> categories = categoryService.getCategories(LocaleContextHolder.getLocale().toLanguageTag(), includeNoPosts);
+		Collection<Category> categories = categoryService.getCategories(LocaleContextHolder.getLocale().toString(), includeNoPosts);
 
 		List<TreeNode<Category>> rootNodes = new ArrayList<>();
 		Iterator<Category> i = categories.iterator();

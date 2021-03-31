@@ -13,7 +13,7 @@ public class CustomFieldSearchRequest implements Serializable {
 	private String language;
 
 	public CustomFieldSearchRequest() {
-		this.language = LocaleContextHolder.getLocale().toLanguageTag();
+		this.language = LocaleContextHolder.getLocale().toString();
 	}
 
 	public CustomFieldSearchRequest(BlogLanguage blogLanguage) {

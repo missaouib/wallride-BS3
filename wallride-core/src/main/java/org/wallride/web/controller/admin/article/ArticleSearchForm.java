@@ -99,7 +99,7 @@ public class ArticleSearchForm implements Serializable {
 		}
 		request.setAuthorId(getAuthorId());
 		request.setStatus(getStatus());
-		request.setLanguage(LocaleContextHolder.getLocale().toLanguageTag());
+		request.setLanguage(LocaleContextHolder.getLocale().toString());
 		return request;
 	}
 

@@ -46,7 +46,7 @@ public class RssFeedView extends AbstractRssFeedView {
 			Channel feed,
 			HttpServletRequest request) {
 		Blog blog = blogService.getBlogById(Blog.DEFAULT_ID);
-		String language = LocaleContextHolder.getLocale().toLanguageTag();
+		String language = LocaleContextHolder.getLocale().toString();
 
 		feed.setTitle(blog.getTitle(language));
 		feed.setDescription(blog.getTitle(language));
@@ -85,7 +85,7 @@ public class RssFeedView extends AbstractRssFeedView {
 		Blog blog = blogService.getBlogById(Blog.DEFAULT_ID);
 		if (blog.getLanguages().size() > 1) {
 			builder.path("/{language}");
-			params.put("language", LocaleContextHolder.getLocale().toLanguageTag());
+			params.put("language", LocaleContextHolder.getLocale().toString());
 		}
 		builder.path("/{year}/{month}/{day}/{code}");
 		params.put("year", String.format("%04d", article.getDate().getYear()));

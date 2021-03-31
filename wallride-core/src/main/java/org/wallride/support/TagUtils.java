@@ -31,6 +31,6 @@ public class TagUtils {
 	}
 
 	public List<Tag> getAllTags() {
-		return tagService.getTags(LocaleContextHolder.getLocale().toLanguageTag());
+		return tagService.getTags(LocaleContextHolder.getLocale().toString());
 	}
 }
