@@ -137,7 +137,7 @@
 					<div id="publisher-items" class="list-group col-4">
 						<div id="search-form" class="input-group mb-2">
 							<input id="search-input" type="text" name="keyword" th:value="*{keyword}" class="form-control"
-									th:attr="placeholder=#{Keywords} + ' (' + #{Searches} + ' ' + #{PublisherCode} + ' and ' + #{PublisherName} + ')'"/>
+									th:attr="placeholder=#{Keywords} + ' (' + #{PublisherCode} + ' or ' + #{PublisherName} + ')'"/>
 							<div class="input-group-append">
 								<button id="search-button" class="btn btn-success" formmethod="post"
 										th:formaction="@{__${ADMIN_PATH}__/publisher/search}">

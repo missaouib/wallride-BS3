@@ -39,6 +39,7 @@ import org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
+import org.wallride.publisher.PublisherController;
 import org.wallride.service.BlogService;
 import org.wallride.support.CodeFormatAnnotationFormatterFactory;
 import org.wallride.web.controller.admin.DashboardController;
@@ -49,7 +50,7 @@ import java.util.List;
 import java.util.Set;
 
 @Configuration
-@ComponentScan(basePackageClasses = DashboardController.class)
+@ComponentScan(basePackageClasses = {DashboardController.class, PublisherController.class})
 public class WebAdminConfiguration extends DelegatingWebMvcConfiguration {
 
 	@Autowired

@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package org.wallride.repository;
+package org.wallride.publisher;
 
 import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.wallride.domain.Publisher;
-import org.wallride.web.controller.admin.publisher.PublisherForm;
 
 public interface PublisherRepositoryCustom {
 

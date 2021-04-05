@@ -28,6 +28,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.wallride.publisher.PublisherRepository;
+import org.wallride.publisher.PublisherService;
 import org.wallride.repository.BlogRepository;
 import org.wallride.service.BlogService;
 
@@ -35,7 +37,7 @@ import org.wallride.service.BlogService;
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @EnableConfigurationProperties(WallRideProperties.class)
 @EnableAsync
-@EnableJpaRepositories(basePackageClasses = BlogRepository.class)
+@EnableJpaRepositories(basePackageClasses = {BlogRepository.class, PublisherRepository.class})
 @Import({
 		WallRideCacheConfiguration.class,
 		WallRideJobConfiguration.class,
@@ -48,7 +50,7 @@ import org.wallride.service.BlogService;
 		WallRideThymeleafConfiguration.class,
 		WallRideWebMvcConfiguration.class,
 })
-@ComponentScan(basePackageClasses = BlogService.class)
+@ComponentScan(basePackageClasses = {BlogService.class, PublisherService.class})
 public class WallRideAutoConfiguration {
 
 	@Bean

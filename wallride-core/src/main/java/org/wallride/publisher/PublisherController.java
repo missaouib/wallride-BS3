@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wallride.web.controller.admin.publisher;
+package org.wallride.publisher;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +35,6 @@ import org.wallride.domain.Publisher;
 import org.wallride.exception.DuplicateCodeException;
 import org.wallride.exception.EmptyCodeException;
 import org.wallride.support.AuthorizedUser;
-import org.wallride.service.PublisherService;
 import org.wallride.web.support.Pagination;
 import org.wallride.web.support.RestValidationErrorModel;
 
@@ -58,7 +57,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ValidationException;
-import static org.wallride.service.PublisherService.*;
+
+import static org.wallride.publisher.PublisherService.*;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -119,7 +119,8 @@ public class PublisherController {
 			BindingResult result,
 			@PageableDefault(ITEMS_PER_PAGE) Pageable pageable,
 			Model model,
-			HttpServletRequest servletRequest)
+			HttpServletRequest servletRequest,
+			RedirectAttributes redirectAttributes)
 			throws UnsupportedEncodingException {
 		Page<Publisher> publishers = publisherService.getPublishers(form.withLanguage(language), pageable);
 		model.addAttribute("publishers", publishers);
@@ -146,12 +147,7 @@ public class PublisherController {
 			@RequestParam long id,
 			@ModelAttribute("form") PublisherForm form,
 			BindingResult result,
-			@ModelAttribute("publishers") Page<Publisher> publishers,
-			@ModelAttribute("pageable") Pageable pageable,
-			@ModelAttribute("pagination") Pagination<Publisher> pagination,
-			Model model,
-			RedirectAttributes redirectAttributes,
-			HttpServletRequest servletRequest) {
+			Model model) {
 		Publisher publisher = publisherService.getPublisherById(id);
 		model.addAttribute("selectedPublisher", publisher);
 
@@ -171,11 +167,7 @@ public class PublisherController {
 			@PathVariable String language,
 			@ModelAttribute("form") PublisherForm form,
 			BindingResult result,
-			@ModelAttribute("publishers") Page<Publisher> publishers,
-			@ModelAttribute("pageable") Pageable pageable,
-			@ModelAttribute("pagination") Pagination<Publisher> pagination,
-			Model model,
-			HttpServletRequest servletRequest)
+			Model model)
 			throws BindException {
 		PublisherForm newForm = form;
 		if (!publisherService.isFormNotBlank(form)) newForm = new PublisherForm();
@@ -194,13 +186,9 @@ public class PublisherController {
 			@PathVariable String language,
 			@Validated(PublisherForm.CreateValidations.class) @ModelAttribute("form") PublisherForm form,
 			BindingResult errors,
-			@ModelAttribute("publishers") Page<Publisher> publishers,
-			@ModelAttribute("pageable") Pageable pageable,
-			@ModelAttribute("pagination") Pagination<Publisher> pagination,
 			AuthorizedUser authorizedUser,
 			RedirectAttributes redirectAttributes,
-			Model model,
-			HttpServletRequest servletRequest) {
+			Model model) {
 		Set<String> buttons = new HashSet<>();
 		buttons.add(Actions.SAVE.toString());
 		buttons.add(Actions.CANCEL.toString());
@@ -235,11 +223,7 @@ public class PublisherController {
 			@PathVariable String language,
 			@ModelAttribute("form") PublisherForm form,
 			Model model,
-			@ModelAttribute("publishers") Page<Publisher> publishers,
-			@ModelAttribute("pageable") Pageable pageable,
-			@ModelAttribute("pagination") Pagination<Publisher> pagination,
-			RedirectAttributes redirectAttributes,
-			HttpServletRequest servletRequest) {
+			RedirectAttributes redirectAttributes) {
 		if (form.getId() == null) {
 			redirectAttributes.addFlashAttribute("noPublisherSelected", true);
 			return "redirect:/_admin/{language}/publisher/search";
@@ -269,12 +253,9 @@ public class PublisherController {
 			@Validated(PublisherForm.UpdateValidations.class) @ModelAttribute("form") PublisherForm form,
 			BindingResult errors,
 			Model model,
-			@ModelAttribute("publishers") Page<Publisher> publishers,
-			@ModelAttribute("pageable") Pageable pageable,
 			@ModelAttribute("pagination") Pagination<Publisher> pagination,
 			AuthorizedUser authorizedUser,
-			RedirectAttributes redirectAttributes,
-			HttpServletRequest servletRequest) {
+			RedirectAttributes redirectAttributes) {
 		Set<String> buttons = new HashSet<>();
 		buttons.add(Actions.UPDATE.toString());
 		buttons.add(Actions.DELETE.toString());
@@ -349,10 +330,13 @@ public class PublisherController {
 		redirectAttributes.addFlashAttribute("errorMessages", errorMessages);
 		redirectAttributes.addAttribute("page", page);
 
-		Publisher firstInPage = publishers.getContent().get(0);
-		if (firstInPage != null) {
-			redirectAttributes.addAttribute("id", firstInPage.getId());
+		if (publishers.getContent().size() > 1) {
+			redirectAttributes.addAttribute("id", publishers.getContent().get(0).getId());
 			return "redirect:/_admin/{language}/publisher/show";
+		}
+
+		if (page > 0) {
+			redirectAttributes.addAttribute("page", page - 1);
 		}
 		return "redirect:/_admin/{language}/publisher/search";
 	}
@@ -407,7 +391,7 @@ public class PublisherController {
 			response = new ResponseEntity<>(report, headers, HttpStatus.OK);
 		} catch (JRException e) {
 			e.printStackTrace();
-			logger.warn("Could not export the report to the pdf stream. {}", e);
+			logger.warn("Could not export the report to the PDF stream. {}", e);
 		}
 
 		return response;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wallride.service;
+package org.wallride.publisher;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,9 +25,7 @@ import org.wallride.domain.User;
 import org.wallride.exception.DuplicateCodeException;
 import org.wallride.exception.EmptyCodeException;
 import org.wallride.exception.ServiceException;
-import org.wallride.repository.PublisherRepository;
 import org.wallride.support.AuthorizedUser;
-import org.wallride.web.controller.admin.publisher.PublisherForm;
 
 import javax.annotation.Resource;
 

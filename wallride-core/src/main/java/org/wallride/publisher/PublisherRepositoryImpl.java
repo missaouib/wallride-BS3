@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wallride.repository;
+package org.wallride.publisher;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
@@ -30,22 +30,27 @@ import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.StringUtils;
 import org.wallride.domain.Publisher;
-import org.wallride.web.controller.admin.publisher.PublisherForm;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceContextType;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class PublisherRepositoryImpl implements PublisherRepositoryCustom {
 
-	@PersistenceContext
+	@PersistenceContext(type = PersistenceContextType.EXTENDED)
 	private EntityManager entityManager;
+
+	private static Logger logger = LoggerFactory.getLogger(PublisherRepositoryImpl.class);
 
 	@Override
 	public Page<Publisher> search(PublisherForm form) {
@@ -55,6 +60,7 @@ public class PublisherRepositoryImpl implements PublisherRepositoryCustom {
 	@Override
 	public Page<Publisher> search(PublisherForm form, Pageable pageable) {
 		Session session = (Session) entityManager.getDelegate();
+		logger.warn("entityManager = {}; session = {}", entityManager, session);
 		Criteria criteria = session.createCriteria(Publisher.class);
 
 		FullTextQuery persistenceQuery = buildFullTextQuery(form, pageable, criteria);
