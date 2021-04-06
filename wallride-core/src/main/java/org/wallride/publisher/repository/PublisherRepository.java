@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wallride.publisher;
+package org.wallride.publisher.repository;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;

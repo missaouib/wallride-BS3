@@ -39,7 +39,7 @@ import org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
-import org.wallride.publisher.PublisherController;
+import org.wallride.publisher.controller.PublisherController;
 import org.wallride.service.BlogService;
 import org.wallride.support.CodeFormatAnnotationFormatterFactory;
 import org.wallride.web.controller.admin.DashboardController;

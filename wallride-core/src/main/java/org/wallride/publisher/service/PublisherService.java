@@ -14,20 +14,26 @@
  * limitations under the License.
  */
 
-package org.wallride.publisher;
+package org.wallride.publisher.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.wallride.domain.Publisher;
 import org.wallride.domain.User;
 import org.wallride.exception.DuplicateCodeException;
 import org.wallride.exception.EmptyCodeException;
 import org.wallride.exception.ServiceException;
+import org.wallride.publisher.controller.PublisherForm;
+import org.wallride.publisher.repository.PublisherRepository;
 import org.wallride.support.AuthorizedUser;
+import org.wallride.web.support.Pagination;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -145,5 +151,30 @@ public class PublisherService {
 			return false;
 		}
 		return true;
+	}
+
+	public void searchAndSetPagination(
+			PublisherForm form,
+			String language,
+			Pageable pageable,
+			String searchUrl,
+			Model model) {
+		Page<Publisher> publishers = getPublishers(form.withLanguage(language), pageable);
+		model.addAttribute("publishers", publishers);
+		model.addAttribute("pagination", new Pagination<>(publishers, searchUrl));
+	}
+
+	public String buildSearchUrl(HttpServletRequest servletRequest) {
+		return ServletUriComponentsBuilder.fromRequest(servletRequest)
+				.replaceQueryParam("page")
+				.build()
+				.toUriString();
+	}
+
+	public String buildSearchUrl(String searchUrl) {
+		return ServletUriComponentsBuilder.fromHttpUrl(searchUrl)
+				.replaceQueryParam("page")
+				.build()
+				.toUriString();
 	}
 }

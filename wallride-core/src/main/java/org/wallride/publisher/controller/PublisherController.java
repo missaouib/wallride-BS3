@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wallride.publisher;
+package org.wallride.publisher.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,10 +31,11 @@ import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.wallride.domain.Publisher;
 import org.wallride.exception.DuplicateCodeException;
 import org.wallride.exception.EmptyCodeException;
+import org.wallride.publisher.service.PublisherService;
+import org.wallride.publisher.service.PublisherService.Actions;
 import org.wallride.support.AuthorizedUser;
 import org.wallride.web.support.Pagination;
 import org.wallride.web.support.RestValidationErrorModel;
@@ -58,8 +59,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ValidationException;
-
-import static org.wallride.publisher.PublisherService.*;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -122,10 +121,10 @@ public class PublisherController {
 			@PageableDefault(ITEMS_PER_PAGE) Pageable pageable,
 			HttpServletRequest servletRequest)
 			throws UnsupportedEncodingException {
-		String searchUrl = buildSearchUrl(servletRequest);
+		String searchUrl = publisherService.buildSearchUrl(servletRequest);
 		model.addAttribute("searchUrl", searchUrl);
 
-		searchAndSetPagination(form, language, pageable, searchUrl, model);
+		publisherService.searchAndSetPagination(form, language, pageable, searchUrl, model);
 		model.addAttribute("pageable", pageable);
 
 		if (form.getId() != null) {
@@ -159,7 +158,7 @@ public class PublisherController {
 		
 		Publisher publisher = publisherService.getPublisherById(id);
 		model.addAttribute("selectedPublisher", publisher);
-		model.addAttribute("pagination", new Pagination<>(publishers, buildSearchUrl(searchUrl)));
+		model.addAttribute("pagination", new Pagination<>(publishers, publisherService.buildSearchUrl(searchUrl)));
 
 		PublisherForm editForm = PublisherForm.createFormfromDomainObject(publisher);
 		model.addAttribute("form", editForm.withKeyword(form.getKeyword()));
@@ -222,7 +221,8 @@ public class PublisherController {
 		redirectAttributes.addAttribute("language", language);
 		redirectAttributes.addAttribute("id", publisher.getId());
 
-		searchAndSetPagination(form, language, pageable, buildSearchUrl(searchUrl), model);
+		publisherService.searchAndSetPagination(form, language, pageable,
+				publisherService.buildSearchUrl(searchUrl), model);
 		return "redirect:/_admin/{language}/publisher/show";
 	}
 
@@ -300,7 +300,8 @@ public class PublisherController {
 		redirectAttributes.addAttribute("id", publisher.getId());
 		redirectAttributes.addAttribute("page", pagination.getCurrentPageNumber());
 
-		searchAndSetPagination(form, language, pageable, buildSearchUrl(searchUrl), model);
+		publisherService.searchAndSetPagination(form, language, pageable,
+				publisherService.buildSearchUrl(searchUrl), model);
 		return "redirect:/_admin/{language}/publisher/show";
 	}
 
@@ -346,7 +347,8 @@ public class PublisherController {
 		redirectAttributes.addAttribute("page", page);
 
 		if (publishers.getContent().size() > 1) {
-			searchAndSetPagination(form, language, pageable, buildSearchUrl(searchUrl), model);
+			publisherService.searchAndSetPagination(form, language, pageable,
+					publisherService.buildSearchUrl(searchUrl), model);
 			publishers = (Page<Publisher>) model.asMap().get("publishers");
 			Publisher firstPublisher = publishers.getContent().get(0);
 			redirectAttributes.addAttribute("id", firstPublisher.getId());
@@ -361,15 +363,14 @@ public class PublisherController {
 
 	@RequestMapping(value = "/report", method = RequestMethod.POST)
 	public ResponseEntity<byte[]> getReportPdf(
-			@ModelAttribute("form") PublisherForm form,
-			@PathVariable String language) {
+			@PathVariable String language,
+			@ModelAttribute("form") PublisherForm form) {
 		// Taken from http://blog.triadworks.com.br/jasperreports-gerando-relatorios-pdf-na-web
 		final InputStream inStream = getClass().getResourceAsStream("/jasperreport/publishers.jrxml");
 		JasperReport jasper = null;
 		try {
 			jasper = JasperCompileManager.compileReport(inStream);
 		} catch (JRException e) {
-			e.printStackTrace();
 			logger.warn("Could not compile the report. {}", e);
 		}
 
@@ -391,7 +392,6 @@ public class PublisherController {
 			JRDataSource beanDataSource = new JRBeanCollectionDataSource(results);
 			jasperPrint = JasperFillManager.fillReport(jasper, params, beanDataSource);
 		} catch (JRException e) {
-			e.printStackTrace();
 			logger.warn("Could not fill the report from the data source. {}", e);
 		}
 
@@ -407,29 +407,9 @@ public class PublisherController {
 			byte[] report = JasperExportManager.exportReportToPdf(jasperPrint);
 			response = new ResponseEntity<>(report, headers, HttpStatus.OK);
 		} catch (JRException e) {
-			e.printStackTrace();
 			logger.warn("Could not export the report to the PDF stream. {}", e);
 		}
 
 		return response;
-	}
-
-	private void searchAndSetPagination(
-			PublisherForm form,
-			String language,
-			Pageable pageable,
-			String searchUrl,
-			Model model) {
-		Page<Publisher> publishers = publisherService.getPublishers(form.withLanguage(language), pageable);
-		model.addAttribute("publishers", publishers);
-		model.addAttribute("pagination", new Pagination<>(publishers, searchUrl));
-	}
-
-	private String buildSearchUrl(HttpServletRequest servletRequest) {
-		return ServletUriComponentsBuilder.fromRequest(servletRequest).replaceQueryParam("page").build().toUriString();
-	}
-
-	private String buildSearchUrl(String searchUrl) {
-		return ServletUriComponentsBuilder.fromHttpUrl(searchUrl).replaceQueryParam("page").build().toUriString();
 	}
 }

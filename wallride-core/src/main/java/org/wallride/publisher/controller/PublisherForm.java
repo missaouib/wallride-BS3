@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wallride.publisher;
+package org.wallride.publisher.controller;
 
 import java.io.Serializable;
 

@@ -28,8 +28,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.wallride.publisher.PublisherRepository;
-import org.wallride.publisher.PublisherService;
+import org.wallride.publisher.repository.PublisherRepository;
+import org.wallride.publisher.service.PublisherService;
 import org.wallride.repository.BlogRepository;
 import org.wallride.service.BlogService;
 
