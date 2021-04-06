@@ -63,19 +63,19 @@
 	</div>
 	<div id="wr-page-content">
 		<div class="container-fluid">
-			<div id="message-saved" class="alert alert-success" th:if="${savedPublisher ne null}">
+			<div id="message-saved" class="alert alert-success ml-n3" th:if="${savedPublisher ne null}">
 				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
 				<span th:text="#{SavedPublisher}">Publisher Saved.</span>
 			</div>
-			<div id="message-deleted" class="alert alert-success" th:if="${deletedPublisher ne null}">
+			<div id="message-deleted" class="alert alert-success ml-n3" th:if="${deletedPublisher ne null}">
 				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
 				<span th:text="#{DeletedPublisher}">Publisher Deleted.</span>
 			</div>
-			<div id="message-no-selection" class="alert alert-danger" th:if="${noPublisherSelected ne null}">
+			<div id="message-no-selection" class="alert alert-danger ml-n3" th:if="${noPublisherSelected ne null}">
 				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
 				<span th:text="#{NoPublisher}">No Publisher Selected.</span>
 			</div>
-			<div id="message-no-items" class="alert alert-info" th:if="${#lists.isEmpty(publishers.getContent())}">
+			<div id="message-no-items" class="alert alert-info ml-n3" th:if="${#lists.isEmpty(publishers.getContent())}">
 				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
 				<span th:text="#{NoItems}">No Items.</span>
 			</div>
