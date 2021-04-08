@@ -16,13 +16,30 @@
 
 package org.wallride.domain;
 
-import org.hibernate.annotations.*;
-import org.hibernate.search.annotations.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.search.annotations.Analyze;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.SortableField;
 
-import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
 @NamedEntityGraphs({
@@ -30,7 +47,6 @@ import javax.persistence.Table;
 		@NamedEntityGraph(name = Publisher.DEEP_GRAPH_NAME)
 })
 @Table(name = "publisher", uniqueConstraints = @UniqueConstraint(columnNames = {"code", "language"}))
-@Inheritance(strategy = InheritanceType.JOINED)
 @DynamicInsert
 @DynamicUpdate
 @Indexed
@@ -55,6 +71,10 @@ public class Publisher extends DomainObject<Long> {
 	@SortableField(forField = "sortCode")
 	private String code;
 
+	@Column(length = 6, nullable = false)
+	@Field(analyze = Analyze.NO)
+	private String language;
+
 	@Column(nullable = false)
 	@Field
 	private String name;
@@ -66,9 +86,8 @@ public class Publisher extends DomainObject<Long> {
 	@Lob
 	private String notes;
 
-	@Column(length = 6, nullable = false)
-	@Field(analyze = Analyze.NO)
-	private String language;
+	@OneToMany(mappedBy = "publisher", cascade = CascadeType.ALL)
+	private Set<Book> books = new HashSet<>();
 
 	@Override
 	public Long getId() {
@@ -85,6 +104,14 @@ public class Publisher extends DomainObject<Long> {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
 	}
 
 	public String getName() {
@@ -117,14 +144,6 @@ public class Publisher extends DomainObject<Long> {
 
 	public void setNotes(String notes) {
 		this.notes = notes;
-	}
-
-	public String getLanguage() {
-		return language;
-	}
-
-	public void setLanguage(String language) {
-		this.language = language;
 	}
 
 	@Override
