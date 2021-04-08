@@ -78,18 +78,18 @@ module.exports = {
 		port: 8000
 	}, 
 	resolve: {
-	　fallback: {
+		fallback: {
 			fs: false,
-	　　"util": require.resolve("util/"),
-	　　"os": require.resolve("os-browserify/browser"),
-	　　"crypto": require.resolve("crypto-browserify"),
-	　　"buffer": require.resolve("buffer/"),
-	　　"path": require.resolve("path-browserify"),
-	　　"zlib": require.resolve("browserify-zlib"),
-	　　"http": require.resolve("stream-http"),
-	　　"https": require.resolve("https-browserify"),
-	　　"assert": require.resolve("assert/"),
-	　　"stream": require.resolve("stream-browserify")
-	　}
+			"util": require.resolve("util/"),
+			"os": require.resolve("os-browserify/browser"),
+			"crypto": require.resolve("crypto-browserify"),
+			"buffer": require.resolve("buffer/"),
+			"path": require.resolve("path-browserify"),
+			"zlib": require.resolve("browserify-zlib"),
+			"http": require.resolve("stream-http"),
+			"https": require.resolve("https-browserify"),
+			"assert": require.resolve("assert/"),
+			"stream": require.resolve("stream-browserify")
+		}
 	} 
 };
