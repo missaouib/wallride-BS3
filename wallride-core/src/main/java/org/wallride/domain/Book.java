@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedEntityGraph;
@@ -73,6 +74,9 @@ public class Book extends DomainObject<Long> {
     @ManyToOne
     @JoinColumn(name = "publisher_id")
 	private Publisher publisher;
+
+	@Lob
+	private String description;
 
     @Override
 	public Long getId() {

@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedEntityGraphs;
@@ -21,6 +22,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SortNatural;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.SortableField;
@@ -45,26 +47,34 @@ public class Author extends DomainObject<Long> {
 	@Field(name = "sortId", analyze = Analyze.NO, index = Index.NO)
 	@SortableField(forField = "sortId")
 	private long id;
-
+	
 	@Column(length = 200, nullable = false)
-	@Field(analyze = Analyze.NO)
+	@Fields({
+		@Field,
+		@Field(name = "sortCode", analyze = Analyze.NO, index = Index.NO)
+	})
+	@SortableField(forField = "sortCode")
 	private String code;
 
 	@Column(length = 6, nullable = false)
 	@Field(analyze = Analyze.NO)
 	private String language;
 
-    @Column(length = 255)
+	@Column(length = 255)
 	@Field
 	private String name;
 
-    @ManyToMany
-	@JoinTable(
-			name = "book_author",
-			joinColumns = {@JoinColumn(name = "author_id")},
-			inverseJoinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id"))
-	@SortNatural
-	private SortedSet<Book> books = new TreeSet<>();
+	@Lob
+	@Field
+	private String description;
+
+	// @ManyToMany
+	// @JoinTable(
+	// 		name = "book_author",
+	// 		joinColumns = {@JoinColumn(name = "author_id")},
+	// 		inverseJoinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id"))
+	// @SortNatural
+	// private SortedSet<Book> books = new TreeSet<>();
 
 	@Override
 	public Long getId() {
@@ -91,7 +101,7 @@ public class Author extends DomainObject<Long> {
 		this.language = language;
 	}
 
-    public String getName() {
+	public String getName() {
 		return name;
 	}
 
@@ -99,9 +109,25 @@ public class Author extends DomainObject<Long> {
 		this.name = name;
 	}
 
-    @Override
-    public String print() {
-        return getName();
-    }
-    
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	// public SortedSet<Book> getBooks() {
+	// 	return books;
+	// }
+
+	// public void setBooks(SortedSet<Book> books) {
+	// 	this.books = books;
+	// }
+
+	@Override
+	public String print() {
+		return getName();
+	}
+	
 }

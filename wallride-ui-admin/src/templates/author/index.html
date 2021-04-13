@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
 <head>
 	<meta charset="utf-8" th:replace="layout::head('WallRide')"/>
-	<title>Publisher | WallRide</title>
+	<title>Author | WallRide</title>
 	<script src="/resources/admin/bundle.js" th:remove="all"></script>
 </head>
 <body>
@@ -12,34 +12,34 @@
 		<div class="page-header d-flex justify-content-between border-bottom py-0 ml-n3">
 			<h1>
 				<span th:text="${#sets.contains(buttons, 'SAVE')} ? #{Add} : (${#sets.contains(buttons, 'UPDATE')} ? #{Edit} : ' ')"></span>
-				<span th:text="#{Publisher}">Publisher</span>
+				<span th:text="#{Author}">Author</span>
 			</h1>
 			<div>
 				<div class="btn-group mr-2">
-					<a th:attr="data-action=@{__${ADMIN_PATH}__/publisher/report}" class="btn btn-primary"
-							th:if="!${#lists.isEmpty(publishers.getContent())}">
+					<a th:attr="data-action=@{__${ADMIN_PATH}__/author/report}" class="btn btn-primary"
+							th:if="!${#lists.isEmpty(authors.getContent())}">
 						<span data-feather="download"></span> <span th:text="#{Report}">Report</span>
 					</a>
 				</div>
 				<div id="action-buttons" class="btn-group align-items-center">
 					<a type="button" id="add-action" class="btn btn-primary"
 							value="add" th:if="${#sets.contains(buttons, 'ADD')}"
-							th:attr="data-action=@{__${ADMIN_PATH}__/publisher/create}">
+							th:attr="data-action=@{__${ADMIN_PATH}__/author/create}">
 						<span data-feather="plus"></span> <span th:text="#{Add}">Add</span>
 					</a>
 					<a type="button" id="edit-action" class="btn btn-primary"
-							value="edit" th:if="${#sets.contains(buttons, 'EDIT') and (not #lists.isEmpty(publishers.getContent()))}"
-							th:attr="data-action=@{__${ADMIN_PATH}__/publisher/edit}">
+							value="edit" th:if="${#sets.contains(buttons, 'EDIT') and (not #lists.isEmpty(authors.getContent()))}"
+							th:attr="data-action=@{__${ADMIN_PATH}__/author/edit}">
 						<span data-feather="edit"></span> <span th:text="#{Edit}">Edit</span>
 					</a>
 					<a type="button" id="save-action" class="btn btn-primary"
 							value="save" th:if="${#sets.contains(buttons, 'SAVE')}"
-							th:attr="data-action=@{__${ADMIN_PATH}__/publisher/save}">
+							th:attr="data-action=@{__${ADMIN_PATH}__/author/save}">
 						<span data-feather="save"></span> <span th:text="#{Save}">Save</span>
 					</a>
 					<a type="button" id="update-action" class="btn btn-primary"
 							value="update" th:if="${#sets.contains(buttons, 'UPDATE')}"
-							th:attr="data-action=@{__${ADMIN_PATH}__/publisher/update}">
+							th:attr="data-action=@{__${ADMIN_PATH}__/author/update}">
 						<span data-feather="save"></span> <span th:text="#{Update}">Update</span>
 					</a>
 					<a type="button" id="delete-action" class="btn btn-primary"
@@ -49,13 +49,13 @@
 					</a>
 					<a type="button" id="cancel-action" class="btn btn-primary"
 							value="cancel" th:if="${#sets.contains(buttons, 'CANCEL')}"
-							th:attr="data-action=@{__${ADMIN_PATH}__/publisher/show}">
+							th:attr="data-action=@{__${ADMIN_PATH}__/author/show}">
 						<span data-feather="corner-up-left"></span> <span th:text="#{Cancel}"></span>
 					</a>
 				</div>
 				<a type="button" id="show-action" class="btn btn-primary d-none"
 						value="show"
-						th:attr="data-action=@{__${ADMIN_PATH}__/publisher/show}">
+						th:attr="data-action=@{__${ADMIN_PATH}__/author/show}">
 					<span data-feather="archive"></span> <span th:text="#{Show}">Show</span>
 				</a>
 			</div>
@@ -63,25 +63,25 @@
 	</div>
 	<div id="wr-page-content">
 		<div class="container-fluid">
-			<div id="message-saved" class="alert alert-success ml-n3" th:if="${savedPublisher ne null}">
+			<div id="message-saved" class="alert alert-success ml-n3" th:if="${savedAuthor ne null}">
 				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-				<span th:text="#{SavedPublisher}">Publisher Saved.</span>
+				<span th:text="#{SavedAuthor}">Author Saved.</span>
 			</div>
-			<div id="message-deleted" class="alert alert-success ml-n3" th:if="${deletedPublisher ne null}">
+			<div id="message-deleted" class="alert alert-success ml-n3" th:if="${deletedAuthor ne null}">
 				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-				<span th:text="#{DeletedPublisher}">Publisher Deleted.</span>
+				<span th:text="#{DeletedAuthor}">Author Deleted.</span>
 			</div>
-			<div id="message-no-selection" class="alert alert-danger ml-n3" th:if="${noPublisherSelected ne null}">
+			<div id="message-no-selection" class="alert alert-danger ml-n3" th:if="${noAuthorSelected ne null}">
 				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-				<span th:text="#{NoPublisher}">No Publisher Selected.</span>
+				<span th:text="#{NoAuthor}">No Author Selected.</span>
 			</div>
-			<div id="message-no-items" class="alert alert-info ml-n3" th:if="${#lists.isEmpty(publishers.getContent())}">
+			<div id="message-no-items" class="alert alert-info ml-n3" th:if="${#lists.isEmpty(authors.getContent())}">
 				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
 				<span th:text="#{NoItems}">No Items.</span>
 			</div>
-			<section id="publisher-content">
-				<form id="publisher-form" method="post" th:object="${form}"
-						th:action="@{__${ADMIN_PATH}__/publisher/show}" class="row">
+			<section id="author-content">
+				<form id="author-form" method="post" th:object="${form}"
+						th:action="@{__${ADMIN_PATH}__/author/show}" class="row">
 					<div class="list-group col-8">
 						<div class="alert alert-danger" th:if="${#fields.hasErrors('all')}">
 							<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -90,66 +90,50 @@
 						<input type="hidden" name="id" th:value="*{id}"  />
 						<div class="input-group mb-3">
 							<div class="input-group-prepend">
-								<span class="input-group-text" for="code" th:text="#{PublisherCode}">PublisherCode</span>
+								<span class="input-group-text" for="code" th:text="#{AuthorCode}">Author Code</span>
 							</div>
 							<input type="text" th:field="*{code}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
-								th:classappend="${#fields.hasErrors('code')} ? 'is-invalid'" th:attr="placeholder=#{PublisherCode} + ' (' + #{MandatoryField} + ')'" />
+								th:classappend="${#fields.hasErrors('code')} ? 'is-invalid'" th:attr="placeholder=#{AuthorCode} + ' (' + #{MandatoryField} + ')'" />
 							<span class="invalid-feedback" th:each="err : ${#fields.errors('code')}" th:text="${err}"></span>
 						</div>
 						<div class="input-group mb-3">
 							<div class="input-group-prepend">
-								<span class="input-group-text" for="name" th:text="#{PublisherName}">PublisherName</label>
+								<span class="input-group-text" for="name" th:text="#{AuthorName}">Author Name</label>
 							</div>
 							<input type="text" th:field="*{name}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
-								th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'" th:attr="placeholder=#{PublisherName} + ' (' + #{MandatoryField} + ')'" />
+								th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'" th:attr="placeholder=#{AuthorName} + ' (' + #{MandatoryField} + ')'" />
 							<span class="invalid-feedback" th:each="err : ${#fields.errors('name')}" th:text="${err}"></span>
-						</div>
-						<div class="input-group mb-3">
-							<div class="input-group-prepend">
-								<span class="input-group-text" for="country" th:text="#{Country}">Country</label>
-							</div>
-							<input type="text" th:field="*{country}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
-								th:classappend="${#fields.hasErrors('country')} ? 'is-invalid'" th:attr="placeholder=#{Country}" />
-							<span class="invalid-feedback" th:each="err : ${#fields.errors('country')}" th:text="${err}"></span>
-						</div>
-						<div class="input-group mb-3">
-							<div class="input-group-prepend">
-								<span class="input-group-text" for="webpage" th:text="#{Webpage}">Webpage</label>
-							</div>
-							<input type="text" th:field="*{webpage}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
-								th:classappend="${#fields.hasErrors('webpage')} ? 'is-invalid'" th:attr="placeholder=#{Webpage}" />
-							<span class="invalid-feedback" th:each="err : ${#fields.errors('webpage')}" th:text="${err}"></span>
 						</div>
 						<div class="input-group">
 							<div class="input-group-prepend">
-								<span class="input-group-text" for="notes" th:text="#{Notes}">Notes</label>
+								<span class="input-group-text" for="description" th:text="#{AuthorDescription}">Author Description</label>
 							</div>
-							<textarea type="text" th:field="*{notes}" class="form-control" style="min-height: 150px" th:readonly="${#sets.contains(buttons, 'SHOW')}"
-								th:classappend="${#fields.hasErrors('notes')} ? 'is-invalid'" th:attr="placeholder=#{Notes}">
+							<textarea type="text" th:field="*{description}" class="form-control" style="min-height: 150px" th:readonly="${#sets.contains(buttons, 'SHOW')}"
+								th:classappend="${#fields.hasErrors('description')} ? 'is-invalid'" th:attr="placeholder=#{AuthorDescription}">
 							</textarea>
-							<span class="invalid-feedback" th:each="err : ${#fields.errors('notes')}" th:text="${err}"></span>
+							<span class="invalid-feedback" th:each="err : ${#fields.errors('description')}" th:text="${err}"></span>
 						</div>
 						<!-- <div class="btn-group">
 							<button name="submit" class="btn btn-primary ok" th:text="#{Save}" th:readonly="${#sets.contains(buttons, 'SHOW')}">Save</button>
 						</div> -->
 					</div>
 
-					<div id="publisher-items" class="list-group col-4">
+					<div id="author-items" class="list-group col-4">
 						<div id="search-form" class="input-group mb-2">
 							<input id="search-input" type="text" name="keyword" th:value="*{keyword}" class="form-control"
-									th:attr="placeholder=#{Keywords} + ' (' + #{PublisherCode} + ' ' + #{Or} + ' ' + #{PublisherName} + ')'"/>
+									th:attr="placeholder=#{Keywords} + ' (' + #{AuthorCode} + ', ' + #{AuthorName} + ', ' + #{Or} + ' ' + #{AuthorDescription} + ')'"/>
 							<div class="input-group-append">
 								<button id="search-button" class="btn btn-success" formmethod="post"
-										th:formaction="@{__${ADMIN_PATH}__/publisher/search}">
+										th:formaction="@{__${ADMIN_PATH}__/author/search}">
 									<span data-feather="search"></span>
 								</button>
 							</div>
 						</div>
-						<a class="list-group-item list-group-item-action d-flex overflow-hidden" th:id="${publisher.id}"
-								th:each="publisher : ${publishers}" th:classappend="${selectedPublisher != null and publisher.id == selectedPublisher.id} ? 'active'"
-								th:href="@{__${ADMIN_PATH}__/publisher/show(id=${publisher.id},page=${pagination.currentPageNumber})}">
-							<span th:text="${publisher.code}">Code</span>
-							&nbsp;-&nbsp;<span th:text="${publisher.name}">Title</span>
+						<a class="list-group-item list-group-item-action d-flex overflow-hidden" th:id="${author.id}"
+								th:each="author : ${authors}" th:classappend="${selectedAuthor != null and author.id == selectedAuthor.id} ? 'active'"
+								th:href="@{__${ADMIN_PATH}__/author/show(id=${author.id},page=${pagination.currentPageNumber})}">
+							<span th:text="${author.code}">Code</span>
+							&nbsp;-&nbsp;<span th:text="${author.name}">Title</span>
 						</a>
 						<div class="pagination-group d-flex justify-content-between mt-2">
 							<div class="pagination-summary">
@@ -184,7 +168,7 @@
 						<div id="delete-dialog" class="modal-dialog">
 							<div th:fragment="delete-form" class="modal-content">
 								<div class="modal-header">
-									<h4 class="modal-title" th:text="#{DeletePublisher}">Delete Publisher</h4>
+									<h4 class="modal-title" th:text="#{DeleteAuthor}">Delete Author</h4>
 									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 								</div>
 								<div class="modal-body">
@@ -195,7 +179,7 @@
 								</div>
 								<div class="modal-footer">
 									<button class="btn btn-default" data-dismiss="modal" th:text="#{Cancel}">Cancel</button>
-									<button class="btn btn-primary" id="delete-publisher" th:attr="data-action=@{__${ADMIN_PATH}__/publisher/delete}"
+									<button class="btn btn-primary" id="delete-author" th:attr="data-action=@{__${ADMIN_PATH}__/author/delete}"
 											disabled="true" th:text="#{Delete}">Delete</button>
 								</div>
 							</div>
@@ -218,10 +202,10 @@
 							let $form = $self.closest('form');
 							$form.attr('action', $self.attr('href'));
 							$form.submit();
-						}).on('click', '#delete-publisher', function(e) {
+						}).on('click', '#delete-author', function(e) {
 							e.preventDefault();
 							let $self = $(this);
-							let $form = $('#publisher-form');
+							let $form = $('#author-form');
 							let action = $self.data('action');
 
 							action += /*[[@{?page=__${pagination.currentPageNumber}__}]]*/ '';
@@ -235,7 +219,7 @@
 						$('#wr-page-header').on('click', '[data-action]', function(e) {
 							e.preventDefault();
 							let $self = $(this);
-							let $form = $('#publisher-form');
+							let $form = $('#author-form');
 							let action = $self.data('action');
 
 							action += /*[[@{?page=__${pagination.currentPageNumber}__}]]*/ '';
@@ -243,9 +227,9 @@
 								let $input = $form.find('input[name="id"]');
 
 								// If there are no items, go to the search form.
-								let publishers = /*[[${publishers.getContent()}]]*/ [];
+								let authors = /*[[${authors.getContent()}]]*/ [];
 
-								if (publishers.length === 0) {
+								if (authors.length === 0) {
 									// The cancel button's data-action attribute has the value .../show.
 									
 									action = action.replace('show', 'search');
@@ -253,7 +237,7 @@
 									// When we are in the add item mode and click the cancel button,
 									// show the page's first item.
 
-									let first_id = $('#publisher-items > a:first-of-type').attr('id');
+									let first_id = $('#author-items > a:first-of-type').attr('id');
 									$input.attr('value', first_id);
 
 									// Set the id in case we want to reload the page
@@ -267,7 +251,7 @@
 							$form.attr('action', action);
 							$form.submit();
 						});
-						$('#publisher-form').keypress(function(e) {
+						$('#author-form').keypress(function(e) {
 							// Press enter.
 							if (e.which === 13) {
 								// Submit the form action for left-most action button (add, save, or update).
