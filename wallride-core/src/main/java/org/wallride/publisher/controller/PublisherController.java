@@ -37,13 +37,13 @@ import org.wallride.exception.EmptyCodeException;
 import org.wallride.publisher.service.PublisherService;
 import org.wallride.publisher.service.PublisherService.Actions;
 import org.wallride.support.AuthorizedUser;
+import org.wallride.support.CustomResourceBundleControl;
+import org.wallride.support.ReportUtils;
 import org.wallride.web.support.Pagination;
 import org.wallride.web.support.RestValidationErrorModel;
 
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -51,7 +51,6 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import javax.inject.Inject;
@@ -367,24 +366,15 @@ public class PublisherController {
 			@ModelAttribute("form") PublisherForm form) {
 		// Taken from http://blog.triadworks.com.br/jasperreports-gerando-relatorios-pdf-na-web
 		final InputStream inStream = getClass().getResourceAsStream("/jasperreport/publishers.jrxml");
-		JasperReport jasper = null;
-		try {
-			jasper = JasperCompileManager.compileReport(inStream);
-		} catch (JRException e) {
-			logger.warn("Could not compile the report. {}", e);
-		}
+		JasperReport jasper = ReportUtils.compileReport(inStream);
 
 		// Taken from https://stackoverflow.com/a/27532493
 		Map<String, Object> params = new HashMap<>();
 
-		Locale locale;
-		String[] localeInfo = language.split("-");
-		if (localeInfo.length == 2) {
-			locale = new Locale(localeInfo[0], localeInfo[1]);
-		} else {
-			locale = new Locale(localeInfo[0]);
-		}
-		params.put("REPORT_RESOURCE_BUNDLE", ResourceBundle.getBundle("messages/messages", locale));
+		// Used the second solution from https://stackoverflow.com/a/30562269
+		Locale.setDefault(ReportUtils.getLocale(language));
+		ResourceBundle bundle = ResourceBundle.getBundle("messages/messages", new CustomResourceBundleControl("UTF-8"));
+		params.put("REPORT_RESOURCE_BUNDLE", bundle);
 
 		JasperPrint jasperPrint = null;
 		try {
@@ -397,19 +387,8 @@ public class PublisherController {
 
 		// Copied from https://stackoverflow.com/a/16656382
 		String filename = "publishersReport.pdf";
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_PDF);
-		headers.setContentDispositionFormData(filename, filename);
-		headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-	
-		ResponseEntity<byte[]> response = null;
-		try {
-			byte[] report = JasperExportManager.exportReportToPdf(jasperPrint);
-			response = new ResponseEntity<>(report, headers, HttpStatus.OK);
-		} catch (JRException e) {
-			logger.warn("Could not export the report to the PDF stream. {}", e);
-		}
-
+		HttpHeaders headers = ReportUtils.getHttpHeaders(filename);
+		ResponseEntity<byte[]> response = ReportUtils.exportReportToPdf(jasperPrint, headers);
 		return response;
 	}
 }
