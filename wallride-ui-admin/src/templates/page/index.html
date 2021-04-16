@@ -54,6 +54,7 @@
 									$('#search-form input.select2').each(function(index) {
 										var $self = $(this);
 										$self.select2({
+											minimumInputLength: 1,
 											allowClear: true,
 											dropdownAutoWidth: true,
 											dropdownCssClass: 'select2-drop-search-form',

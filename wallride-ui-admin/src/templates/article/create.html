@@ -302,6 +302,7 @@
 									/*<![CDATA[*/
 									$(function() {
 										$('#tags-field').select2({
+											minimumInputLength: 1,
 											multiple: true,
 											createSearchChoice:function(term, data) {
 												if ($(data).filter(function() {
@@ -418,6 +419,7 @@
 									/*<![CDATA[*/
 									$(function() {
 										$('#related-posts-fieldset').select2({
+											minimumInputLength: 1,
 											multiple: true,
 											ajax: {
 												url:  /*[[@{__${ADMIN_PATH}__/posts/select}]]*/ '#',
