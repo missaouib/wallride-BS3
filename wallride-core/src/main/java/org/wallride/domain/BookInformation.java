@@ -5,6 +5,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedEntityGraphs;
 import javax.persistence.Table;
@@ -17,28 +20,32 @@ import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.SortableField;
 
 @Entity
 @NamedEntityGraphs({
-		@NamedEntityGraph(name = Author.SHALLOW_GRAPH_NAME),
-		@NamedEntityGraph(name = Author.DEEP_GRAPH_NAME)
+    @NamedEntityGraph(name = BookInformation.SHALLOW_GRAPH_NAME),
+    @NamedEntityGraph(name = BookInformation.DEEP_GRAPH_NAME)
 })
-@Table(name = "author", uniqueConstraints = @UniqueConstraint(columnNames = {"code", "language"}))
+@Table(name = "book_information", uniqueConstraints = @UniqueConstraint(columnNames = {"code", "language"}))
+@Inheritance(strategy = InheritanceType.JOINED)
 @DynamicInsert
 @DynamicUpdate
 @Indexed
-public class Author extends DomainObject<Long> {
+public class BookInformation extends DomainObject<Long> {
 
-	public static final String SHALLOW_GRAPH_NAME = "AUTHOR_SHALLOW_GRAPH";
-	public static final String DEEP_GRAPH_NAME = "AUTHOR_DEEP_GRAPH";
+    private static final long serialVersionUID = -7146572154669005679L;
 
-	@Id
+    public static final String SHALLOW_GRAPH_NAME = "BOOK_INFORMATION_SHALLOW_GRAPH";
+	public static final String DEEP_GRAPH_NAME = "BOOK_INFORMATION_DEEP_GRAPH";
+
+    @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Field(name = "sortId", analyze = Analyze.NO, index = Index.NO)
 	@SortableField(forField = "sortId")
 	private long id;
-	
+
 	@Column(length = 200, nullable = false)
 	@Fields({
 		@Field,
@@ -51,14 +58,25 @@ public class Author extends DomainObject<Long> {
 	@Field(analyze = Analyze.NO)
 	private String language;
 
-	@Column(length = 255)
+    @Column(length = 200)
 	@Field
-	private String name;
+	private String title;
+
+	@ManyToOne
+	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	private Author author;
+
+    @ManyToOne
+	@IndexedEmbedded(includeEmbeddedObjectId = true)
+	private Publisher publisher;
 
 	@Field
 	private String description;
 
-	@Override
+	@Column(length = 17)
+	private String isbn;
+
+    @Override
 	public Long getId() {
 		return id;
 	}
@@ -83,12 +101,28 @@ public class Author extends DomainObject<Long> {
 		this.language = language;
 	}
 
-	public String getName() {
-		return name;
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+	public Author getAuthor() {
+		return author;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setAuthor(Author author) {
+		this.author = author;
+	}
+
+	public Publisher getPublisher() {
+		return publisher;
+	}
+
+	public void setPublisher(Publisher publisher) {
+		this.publisher = publisher;
 	}
 
 	public String getDescription() {
@@ -99,17 +133,16 @@ public class Author extends DomainObject<Long> {
 		this.description = description;
 	}
 
-	// public SortedSet<Book> getBooks() {
-	// 	return books;
-	// }
-
-	// public void setBooks(SortedSet<Book> books) {
-	// 	this.books = books;
-	// }
-
-	@Override
-	public String print() {
-		return getCode() + " - " + getName();
+	public String getIsbn() {
+		return isbn;
 	}
-	
+
+	public void setIsbn(String isbn) {
+		this.isbn = isbn;
+	}
+
+    @Override
+    public String print() {
+        return getCode() + " - " + getTitle();
+    }
 }

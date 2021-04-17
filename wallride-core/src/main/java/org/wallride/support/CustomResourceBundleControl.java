@@ -10,7 +10,6 @@ import java.util.*;
 /**
  * Copied from https://github.com/hagrawal7/CustomResourceBundleControl/blob/master/CustomResourceBundleControl.java
  * Used to read resource bundles in the specified encoding scheme.
- * The default encoding scheme is UTF-8.
  */
 public class CustomResourceBundleControl extends Control {
 	

@@ -9,15 +9,12 @@
 	<import value="java.util.*"/>
 	<import value="net.sf.jasperreports.engine.data.*"/>
 	<queryString language="hql">
-		<![CDATA[FROM Publisher ORDER BY code]]>
+		<![CDATA[code, name, country, webpage FROM Publisher ORDER BY code]]>
 	</queryString>
-	<field name="id" class="java.lang.String"/>
 	<field name="code" class="java.lang.String"/>
 	<field name="name" class="java.lang.String"/>
 	<field name="country" class="java.lang.String"/>
 	<field name="webpage" class="java.lang.String"/>
-	<field name="notes" class="java.lang.String"/>
-	<field name="language" class="java.lang.String"/>
 	<background>
 		<band/>
 	</background>
@@ -64,7 +61,7 @@
 					<font fontName="文泉驛正黑" size="14" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					<paragraph lineSpacing="Single"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$R{PublisherCode}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$R{Code}]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="false">
 				<reportElement key="textField-12" mode="Opaque" x="132" y="35" width="190" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="ef1bd7e2-1ebb-4566-a845-e79f4cd48722"/>
@@ -78,7 +75,7 @@
 					<font fontName="文泉驛正黑" size="14" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					<paragraph lineSpacing="Single"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$R{PublisherName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$R{Name}]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="false">
 				<reportElement key="textField-12" mode="Opaque" x="322" y="35" width="100" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="c367f05c-0d90-4ddd-9a5c-8834c756a975"/>

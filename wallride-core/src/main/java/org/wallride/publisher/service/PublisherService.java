@@ -147,10 +147,7 @@ public class PublisherService {
 		boolean isWebpageEdited = form.getWebpage() != null && !form.getWebpage().isEmpty();
 		boolean isNotesEdited = form.getNotes() != null && !form.getNotes().isEmpty();
 		boolean isKeywordEdited = form.getKeyword() != null && !form.getKeyword().isEmpty();
-		if (isCodeEdited ||	isNameEdited || isCountryEdited || isWebpageEdited || isNotesEdited || isKeywordEdited) {
-			return false;
-		}
-		return true;
+		return !(isCodeEdited || isNameEdited || isCountryEdited || isWebpageEdited || isNotesEdited || isKeywordEdited);
 	}
 
 	public void searchAndSetPagination(

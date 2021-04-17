@@ -143,10 +143,7 @@ public class AuthorService {
 		boolean isNameEdited = form.getName() != null && !form.getName().isEmpty();
 		boolean isDescriptionEdited = form.getDescription() != null && !form.getDescription().isEmpty();
 		boolean isKeywordEdited = form.getKeyword() != null && !form.getKeyword().isEmpty();
-		if (isCodeEdited ||	isNameEdited || isDescriptionEdited || isKeywordEdited) {
-			return false;
-		}
-		return true;
+		return !(isCodeEdited || isNameEdited || isDescriptionEdited || isKeywordEdited);
 	}
 
 	public void searchAndSetPagination(

@@ -61,14 +61,6 @@ public class Tag extends DomainObject<Long> implements Comparable<Tag> {
 	@SortNatural
 	private SortedSet<Post> posts = new TreeSet<>();
 
-//	@Formula("(" +
-//			"select count(distinct article.id) from article article " +
-//			"inner join post post on article.id = post.id " +
-//			"inner join article_tag tag on article.id = tag.article_id " +
-//			"where tag.tag_id = id " +
-//			"and post.status = 'PUBLISHED') ")
-//	private int articleCount;
-
 	@Override
 	public Long getId() {
 		return id;
@@ -101,10 +93,6 @@ public class Tag extends DomainObject<Long> implements Comparable<Tag> {
 	public void setPosts(SortedSet<Post> posts) {
 		this.posts = posts;
 	}
-
-//	public int getArticleCount() {
-//		return articleCount;
-//	}
 
 	@Override
 	public String print() {

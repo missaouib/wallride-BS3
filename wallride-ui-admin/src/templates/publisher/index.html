@@ -90,18 +90,18 @@
 						<input type="hidden" name="id" th:value="*{id}"  />
 						<div class="input-group mb-3">
 							<div class="input-group-prepend">
-								<span class="input-group-text" for="code" th:text="#{PublisherCode}">PublisherCode</span>
+								<span class="input-group-text" for="code" th:text="#{Code}">Code</span>
 							</div>
 							<input type="text" th:field="*{code}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
-								th:classappend="${#fields.hasErrors('code')} ? 'is-invalid'" th:attr="placeholder=#{PublisherCode} + ' (' + #{MandatoryField} + ')'" />
+								th:classappend="${#fields.hasErrors('code')} ? 'is-invalid'" th:attr="placeholder=#{Code} + ' (' + #{MandatoryField} + ')'" />
 							<span class="invalid-feedback" th:each="err : ${#fields.errors('code')}" th:text="${err}"></span>
 						</div>
 						<div class="input-group mb-3">
 							<div class="input-group-prepend">
-								<span class="input-group-text" for="name" th:text="#{PublisherName}">PublisherName</label>
+								<span class="input-group-text" for="name" th:text="#{Name}">Name</label>
 							</div>
 							<input type="text" th:field="*{name}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
-								th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'" th:attr="placeholder=#{PublisherName} + ' (' + #{MandatoryField} + ')'" />
+								th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'" th:attr="placeholder=#{Name} + ' (' + #{MandatoryField} + ')'" />
 							<span class="invalid-feedback" th:each="err : ${#fields.errors('name')}" th:text="${err}"></span>
 						</div>
 						<div class="input-group mb-3">
@@ -137,7 +137,7 @@
 					<div id="publisher-items" class="list-group col-4">
 						<div id="search-form" class="input-group mb-2">
 							<input id="search-input" type="text" name="keyword" th:value="*{keyword}" class="form-control"
-									th:attr="placeholder=#{Keywords} + ' (' + #{PublisherCode} + ' ' + #{Or} + ' ' + #{PublisherName} + ')'"/>
+									th:attr="placeholder=#{Keywords} + ' (' + #{Code} + ' ' + #{Or} + ' ' + #{Name} + ')'"/>
 							<div class="input-group-append">
 								<button id="search-button" class="btn btn-success" formmethod="post"
 										th:formaction="@{__${ADMIN_PATH}__/publisher/search}">
@@ -148,8 +148,7 @@
 						<a class="list-group-item list-group-item-action d-flex overflow-hidden" th:id="${publisher.id}"
 								th:each="publisher : ${publishers}" th:classappend="${selectedPublisher != null and publisher.id == selectedPublisher.id} ? 'active'"
 								th:href="@{__${ADMIN_PATH}__/publisher/show(id=${publisher.id},page=${pagination.currentPageNumber})}">
-							<span th:text="${publisher.code}">Code</span>
-							&nbsp;-&nbsp;<span th:text="${publisher.name}">Title</span>
+							<span th:text="${publisher.print()}">Publisher</span>
 						</a>
 						<div class="pagination-group d-flex justify-content-between mt-2">
 							<div class="pagination-summary">
@@ -178,31 +177,154 @@
 							</ul>
 						</div>
 					</div>
-
-					<!-- #delete-modal -->
-					<div id="delete-modal" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
-						<div id="delete-dialog" class="modal-dialog">
-							<div th:fragment="delete-form" class="modal-content">
-								<div class="modal-header">
-									<h4 class="modal-title" th:text="#{DeletePublisher}">Delete Publisher</h4>
-									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				</form>
+				<!-- #delete-modal -->
+				<div id="delete-modal" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+					<div id="delete-dialog" class="modal-dialog">
+						<div th:fragment="delete-form" class="modal-content">
+							<div class="modal-header">
+								<h4 class="modal-title" th:text="#{DeletePublisher}">Delete Publisher</h4>
+								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+							</div>
+							<div class="modal-body">
+								<p th:text="#{MakeSureDelete}">Are you sure you want to delete?</p>
+								<div class="checkbox">
+									<label><input type="checkbox" name="confirmed" value="true"/> <span th:text="#{Confirm}">Confirm</span></label>
 								</div>
-								<div class="modal-body">
-									<p th:text="#{MakeSureDelete}">Are you sure you want to delete?</p>
-									<div class="checkbox">
-										<label><input type="checkbox" name="confirmed" value="true"/> <span th:text="#{Confirm}">Confirm</span></label>
-									</div>
-								</div>
-								<div class="modal-footer">
-									<button class="btn btn-default" data-dismiss="modal" th:text="#{Cancel}">Cancel</button>
-									<button class="btn btn-primary" id="delete-publisher" th:attr="data-action=@{__${ADMIN_PATH}__/publisher/delete}"
-											disabled="true" th:text="#{Delete}">Delete</button>
-								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-default" data-dismiss="modal" th:text="#{Cancel}">Cancel</button>
+								<button class="btn btn-primary" id="delete-publisher" th:attr="data-action=@{__${ADMIN_PATH}__/publisher/delete}"
+										disabled="true" th:text="#{Delete}">Delete</button>
 							</div>
 						</div>
 					</div>
-					<!--/#delete-modal -->
-				</form>
+				</div>
+				<!--/#delete-modal -->
+
+				<!-- #publisher-modal -->
+				<div id="publisher-modal" th:fragment="publisher-modal" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+					<div id="publisher-dialog" class="modal-dialog">
+						<div class="modal-content">
+							<form th:fragment="modal-form">
+								<div class="modal-header">
+									<h4 class="modal-title" th:text="#{PublisherModal}">Publisher Modal</h4>
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+								</div>
+								<div class="modal-body">
+									<div class="form-group">
+										<input type="text" name="code" class="form-control" th:attr="placeholder=#{Code} + ' (' + #{SearchField} + ')'" />
+									</div>
+									<div class="form-group">
+										<input type="text" name="name" class="form-control" th:attr="placeholder=#{Name} + ' (' + #{SearchField} + ')'" />
+									</div>
+									<div class="form-group">
+										<input type="text" name="country" class="form-control" th:attr="placeholder=#{Country}" />
+									</div>
+									<div class="form-group">
+										<input type="text" name="webpage" class="form-control" th:attr="placeholder=#{Webpage}" />
+									</div>
+									<div class="form-group">
+										<textarea name="notes" class="form-control" th:attr="placeholder=#{Notes}" style="min-height: 100px"></textarea>
+									</div>
+									<button id="publisher-modal-add-new" type="button" class="btn btn-primary"><span th:text="#{AddNew}">Add New</button>
+									<button id="publisher-modal-search" type="button" class="btn btn-primary"><span th:text="#{Search}">Search</button>
+									<h5 th:text="#{SearchResults}" class="mt-2">Search Results</h5>
+									<div id="publisher-modal-search-results" class="modal-search-results"></div>
+								</div>
+								<div class="modal-footer">
+									<button class="btn btn-default" data-dismiss="modal" th:text="#{Cancel}">Cancel</button>
+									<button class="btn btn-primary" id="publisher-modal-select" th:text="#{Select}">Select</button>
+								</div>
+							</form>
+						</div>
+					</div>
+					<script th:inline="javascript">
+						// <![CDATA[
+						$(function () {
+							$('#wr-page-content').on('click', '#publisher-modal-search', function(e) {
+								e.preventDefault();
+								let code = $('#publisher-modal :input[name="code"]').val();
+								let name = $('#publisher-modal :input[name="name"]').val();
+
+								$.ajax({
+									url: /*[[@{__${ADMIN_PATH}__/publisher/list}]]*/ '#',
+									type: 'post',
+									data: { 'keyword': code + ' ' + name },
+									success: function(publishers) {
+										// Set the search results
+										$('#publisher-modal-search-results').empty();
+
+										publishers.forEach(publisher => {
+											let labelId = 'publisher' + publisher.id;
+											$('#publisher-modal-search-results')
+											.append(
+												$('<input />', {
+													type: 'radio',
+													id: labelId,
+													name: 'modal-selected',
+													value: publisher.id
+												}))
+											.append(
+												$('<label />', {
+													for: labelId,
+													html: publisher.code + ' - ' + publisher.name
+												}))
+											.append('<br>');
+										});
+									},
+									error: function(jqXHR) {
+										var form = $(this).closest('form');
+										$.each(jqXHR.responseJSON.fieldErrors, function(field, message) {
+											var field = $(':input[name="' + field + '"]', form);
+											$(field).closest('.form-group').find('.invalid-feedback').remove();
+											$(field).addClass('is-invalid').after($('<span class="invalid-feedback" />').text(message));
+										});
+										$(self).button('reset');
+									}
+								});
+							}).on('click', '#publisher-modal-select', function(e) {
+								e.preventDefault();
+								$(this).button('loading');
+
+								let selectedItemId = $('input[name="modal-selected"]:checked').val();
+								let selectedItem = $('label[for=publisher' + selectedItemId + ']').text();
+								$('#publisher-modal').modal('hide');
+
+								$('#publisher').val(selectedItem);
+								$('#publisherId').val(selectedItemId);
+							}).on('click', '#publisher-modal-add-new', function(e) {
+								var self = this;
+								var form = $(self).closest('form');
+								var data = {
+									code: $(':input[name="code"]', form).val(),
+									name: $(':input[name="name"]', form).val(),
+									country: $(':input[name="country"]', form).val(),
+									webpage: $(':input[name="webpage"]', form).val(),
+									notes: $(':input[name="notes"]', form).val()
+								};
+								$.ajax({
+									url: /*[[@{__${ADMIN_PATH}__/publisher/publishers.json}]]*/ '#',
+									type: 'post',
+									data: data,
+									success: function() {
+										$('#publisher-modal-search').click();
+									},
+									error: function(jqXHR) {
+										$.each(jqXHR.responseJSON.fieldErrors, function(field, message) {
+											var field = $(':input[name="' + field + '"]', form);
+											$(field).addClass('is-invalid').after($('<span class="invalid-feedback" />').text(message));
+										});
+										$(self).button('reset');
+									}
+								});
+							});
+						});
+						// ]]>
+					</script>
+				</div>
+				<!--/#publisher-modal -->
+
 				<script th:inline="javascript">
 					// <![CDATA[
 					$(function () {
@@ -227,6 +349,11 @@
 							action += /*[[@{?page=__${pagination.currentPageNumber}__}]]*/ '';
 							$form.attr('action', action);
 							$form.submit();
+						}).on('keypress', '#publisher-form', function(e) {
+							// Press enter.
+							if (e.which === 13) {
+								// Submit the form action for left-most action button (add, save, or update).
+							}
 						});
 						$('#delete-modal').on('change', ':input[name="confirmed"]', function () {
 							var confirmed = $(this);
@@ -266,12 +393,6 @@
 
 							$form.attr('action', action);
 							$form.submit();
-						});
-						$('#publisher-form').keypress(function(e) {
-							// Press enter.
-							if (e.which === 13) {
-								// Submit the form action for left-most action button (add, save, or update).
-							}
 						});
 					});
 					// ]]>

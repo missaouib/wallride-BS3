@@ -35,4 +35,6 @@ logging method: trace(), debug(), info(), warn(), error().
         <appender-ref ref="CONSOLE" />
     </root>
     <logger name="org.wallride" level="INFO" />
+    <logger name="org.hibernate.SQL" level="debug"/>
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="trace"/>
 </configuration>

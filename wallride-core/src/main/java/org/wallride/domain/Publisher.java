@@ -25,10 +25,6 @@ import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.SortableField;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -37,7 +33,6 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedEntityGraphs;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -85,9 +80,6 @@ public class Publisher extends DomainObject<Long> {
 
 	@Lob
 	private String notes;
-
-	@OneToMany(mappedBy = "publisher", cascade = CascadeType.ALL)
-	private Set<Book> books = new HashSet<>();
 
 	@Override
 	public Long getId() {
@@ -148,7 +140,7 @@ public class Publisher extends DomainObject<Long> {
 
 	@Override
 	public String print() {
-		return getName();
+		return getCode() + " - " + getName();
 	}
 
 	@Override

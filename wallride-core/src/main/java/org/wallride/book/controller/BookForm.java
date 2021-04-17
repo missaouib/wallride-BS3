@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wallride.author.controller;
+package org.wallride.book.controller;
 
 import java.io.Serializable;
 
@@ -25,9 +25,9 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
-import org.wallride.domain.Author;
+import org.wallride.domain.Book;
 
-public class AuthorForm implements Serializable {
+public class BookForm implements Serializable {
 
 	private static final long serialVersionUID = 2027706685900948291L;
 
@@ -36,8 +36,11 @@ public class AuthorForm implements Serializable {
 	@NotNull(groups = {UpdateValidations.class}) private Long id;
 	@NotNull(groups = {CreateValidations.class, UpdateValidations.class}) private String code;
 	private String language;
-	@NotNull(groups = {CreateValidations.class, UpdateValidations.class}) private String name;
+	@NotNull(groups = {CreateValidations.class, UpdateValidations.class}) private String title;
+	private String authorId;
+	private String publisherId;
 	private String description;
+	private String isbn;
 	private String keyword;
 	private boolean confirmed;
 
@@ -65,17 +68,33 @@ public class AuthorForm implements Serializable {
 		this.language = language;
 	}
 
-	public AuthorForm withLanguage(String language) {
+	public BookForm withLanguage(String language) {
 		this.language = language;
 		return this;
 	}
 
-	public String getName() {
-		return name;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getAuthorId() {
+		return authorId;
+	}
+
+	public void setAuthorId(String authorId) {
+		this.authorId = authorId;
+	}
+
+	public String getPublisherId() {
+		return publisherId;
+	}
+
+	public void setPublisherId(String publisherId) {
+		this.publisherId = publisherId;
 	}
 
 	public String getDescription() {
@@ -86,6 +105,14 @@ public class AuthorForm implements Serializable {
 		this.description = description;
 	}
 
+	public String getIsbn() {
+		return isbn;
+	}
+
+	public void setIsbn(String isbn) {
+		this.isbn = isbn;
+	}
+
 	public String getKeyword() {
 		return keyword;
 	}
@@ -94,7 +121,7 @@ public class AuthorForm implements Serializable {
 		this.keyword = keyword;
 	}
 
-	public AuthorForm withKeyword(String keyword) {
+	public BookForm withKeyword(String keyword) {
 		this.keyword = keyword;
 		return this;
 	}
@@ -117,11 +144,14 @@ public class AuthorForm implements Serializable {
 		return true;
 	}
 
-	public static AuthorForm createFormfromDomainObject(Author author) {
-		AuthorForm request = new AuthorForm();
-		BeanUtils.copyProperties(author, request);
+	public static BookForm createFormfromDomainObject(Book book) {
+		BookForm form = new BookForm();
+		BeanUtils.copyProperties(book, form);
 
-		return request;
+		form.setPublisherId(book.getPublisher() != null ? Long.toString(book.getPublisher().getId()) : null);
+		form.setAuthorId(book.getAuthor() != null ? Long.toString(book.getAuthor().getId()) : null);
+
+		return form;
 	}
 
 	public boolean isKeywordEmpty() {
@@ -135,8 +165,8 @@ public class AuthorForm implements Serializable {
 		return false;
 	}
 	
-	public AuthorForm createAuthorSearchRequest() {
-		AuthorForm searchRequest = new AuthorForm();
+	public BookForm createBookSearchRequest() {
+		BookForm searchRequest = new BookForm();
 		searchRequest.setKeyword(getKeyword());
 		searchRequest.setLanguage(LocaleContextHolder.getLocale().toString());
 		return searchRequest;
@@ -150,11 +180,5 @@ public class AuthorForm implements Serializable {
 		return params;
 	}
 
-	@Override
-	public String toString() {
-		return "AuthorForm [code=" + code + ", confirmed=" + confirmed + ", description="
-				+ description + ", id=" + id + ", keyword=" + keyword + ", language=" + language + ", name=" + name
-				+ "]";
-	}
 
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.wallride.publisher.controller;
+package org.wallride.book.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,18 +30,15 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.FlashMap;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.support.RequestContextUtils;
-import org.wallride.domain.Publisher;
+import org.wallride.domain.Book;
 import org.wallride.exception.DuplicateCodeException;
 import org.wallride.exception.EmptyCodeException;
-import org.wallride.publisher.service.PublisherService;
-import org.wallride.publisher.service.PublisherService.Actions;
+import org.wallride.book.service.BookService;
+import org.wallride.book.service.BookService.Actions;
 import org.wallride.support.AuthorizedUser;
 import org.wallride.support.CustomResourceBundleControl;
 import org.wallride.support.ReportUtils;
-import org.wallride.web.support.DomainObjectSavedModel;
 import org.wallride.web.support.Pagination;
 import org.wallride.web.support.RestValidationErrorModel;
 
@@ -60,7 +57,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.ValidationException;
 
 import java.io.InputStream;
@@ -75,12 +71,12 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 @Controller
-@RequestMapping("/{language}/publisher")
-@SessionAttributes(names = {"publishers", "pageable", "pagination", "searchUrl"})
-public class PublisherController {
+@RequestMapping("/{language}/book")
+@SessionAttributes(names = {"books", "pageable", "pagination", "searchUrl"})
+public class BookController {
 
 	@Inject
-	private PublisherService publisherService;
+	private BookService bookService;
 
 	@Inject
 	private MessageSourceAccessor messageSourceAccessor;
@@ -88,17 +84,17 @@ public class PublisherController {
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	private static Logger logger = LoggerFactory.getLogger(PublisherController.class);
+	private static Logger logger = LoggerFactory.getLogger(BookController.class);
 
 	public static final int ITEMS_PER_PAGE = 3;
 	
 	@ModelAttribute("form")
-	public PublisherForm form(ModelMap modelMap) {
+	public BookForm form(ModelMap modelMap) {
 		// Cover the case where form validation fails and the user is redirected back
 		// Source is https://web.archive.org/web/20160606223639/https://gerrydevstory.com/2013/07/11/preserving-validation-error-messages-on-spring-mvc-form-post-redirect-get/
-		PublisherForm form = (PublisherForm) modelMap.get("form");
+		BookForm form = (BookForm) modelMap.get("form");
 		if (form == null) {
-			form = new PublisherForm();
+			form = new BookForm();
 		}
 		return form;
 	}
@@ -112,27 +108,27 @@ public class PublisherController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String root() {
-		return "redirect:/_admin/{language}/publisher/search";
+		return "redirect:/_admin/{language}/book/search";
 	}
 
 	@RequestMapping(value = "/search", method = {RequestMethod.GET, RequestMethod.POST})
 	public String search(
 			@PathVariable String language,
-			@ModelAttribute("form") PublisherForm form,
+			@ModelAttribute("form") BookForm form,
 			BindingResult result,
 			Model model,
 			@PageableDefault(ITEMS_PER_PAGE) Pageable pageable,
 			HttpServletRequest servletRequest)
 			throws UnsupportedEncodingException {
-		String searchUrl = publisherService.buildSearchUrl(servletRequest);
+		String searchUrl = bookService.buildSearchUrl(servletRequest);
 		model.addAttribute("searchUrl", searchUrl);
 
-		publisherService.searchAndSetPagination(form, language, pageable, searchUrl, model);
+		bookService.searchAndSetPagination(form, language, pageable, searchUrl, model);
 		model.addAttribute("pageable", pageable);
 
 		if (form.getId() != null) {
-			Publisher selectedPublisher = publisherService.getPublisherById(form.getId());
-			model.addAttribute("selectedPublisher", selectedPublisher);
+			Book selectedBook = bookService.getBookById(form.getId());
+			model.addAttribute("selectedBook", selectedBook);
 		}
 
 		Set<String> buttons = new HashSet<>();
@@ -141,84 +137,41 @@ public class PublisherController {
 		buttons.add(Actions.SHOW.toString());
 		model.addAttribute("buttons", buttons);
 
-		return "publisher/index";
-	}
-
-	@ResponseBody
-	@RequestMapping(value = "/list", method = RequestMethod.POST)
-	public List<Publisher> list(
-			@PathVariable String language,
-			@RequestParam String keyword) {
-		PublisherForm form = new PublisherForm()
-				.withKeyword(keyword)
-				.withLanguage(language);
-		return publisherService.getPublishers(form).getContent();
-	}
-
-	@ResponseBody
-	@RequestMapping(value = "/get", method = RequestMethod.POST)
-	public Publisher get(@RequestParam Long id) {
-		return publisherService.getPublisherById(id);
-	}
-
-	@RequestMapping(value="/publishers", method=RequestMethod.POST)
-	public @ResponseBody DomainObjectSavedModel<Long> publishers(
-			@Validated(PublisherForm.CreateValidations.class) PublisherForm form,
-			BindingResult result,
-			AuthorizedUser authorizedUser,
-			HttpServletRequest request,
-			HttpServletResponse response) throws BindException {
-		if (result.hasErrors()) {
-			throw new BindException(result);
-		}
-
-		Publisher publisher = null;
-		try {
-			publisher = publisherService.createPublisher(form, authorizedUser);
-		} catch (EmptyCodeException e) {
-			result.rejectValue("code", "NotNull");
-		}
-		catch (DuplicateCodeException e) {
-			result.rejectValue("code", "NotDuplicate");
-		}
-		if (result.hasErrors()) {
-			throw new BindException(result);
-		}
-
-		FlashMap flashMap = RequestContextUtils.getOutputFlashMap(request);
-		flashMap.put("savedPublisher", publisher);
-		RequestContextUtils.getFlashMapManager(request).saveOutputFlashMap(flashMap, request, response);
-		return new DomainObjectSavedModel<>(publisher);
+		return "book/index";
 	}
 
 	@RequestMapping(value = "/show", method = {RequestMethod.GET, RequestMethod.POST})
 	public String show(
 			@PathVariable String language,
 			@RequestParam long id,
-			@ModelAttribute("form") PublisherForm form,
-			@ModelAttribute("publishers") Page<Publisher> publishers,
-			@ModelAttribute("searchUrl") String searchUrl,
+			@ModelAttribute("form") BookForm form,
 			BindingResult result,
+			@ModelAttribute("books") Page<Book> books,
+			@ModelAttribute("searchUrl") String searchUrl,
 			Model model) {
 		Set<String> buttons = new HashSet<>();
 		buttons.add(Actions.ADD.toString());
 		buttons.add(Actions.EDIT.toString());
 		buttons.add(Actions.SHOW.toString());
 		model.addAttribute("buttons", buttons);
-		
-		Publisher publisher = publisherService.getPublisherById(id);
-		model.addAttribute("selectedPublisher", publisher);
-		model.addAttribute("pagination", new Pagination<>(publishers, publisherService.buildSearchUrl(searchUrl)));
 
-		PublisherForm editForm = PublisherForm.createFormfromDomainObject(publisher);
+		if (result.hasErrors()) {
+			return "book/index";
+		}
+		
+		Book book = bookService.getBookById(id);
+		model.addAttribute("selectedBook", book);
+		model.addAttribute("pagination", new Pagination<>(books, bookService.buildSearchUrl(searchUrl)));
+
+		BookForm editForm = BookForm.createFormfromDomainObject(book);
 		model.addAttribute("form", editForm.withKeyword(form.getKeyword()));
-		return "publisher/index";
+		return "book/index";
 	}
 
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public String create(
 			@PathVariable String language,
-			@ModelAttribute("form") PublisherForm form,
+			@ModelAttribute("form") BookForm form,
 			BindingResult result,
 			Model model)
 			throws BindException {
@@ -227,18 +180,18 @@ public class PublisherController {
 		buttons.add(Actions.CANCEL.toString());
 		model.addAttribute("buttons", buttons);
 
-		PublisherForm newForm = form;
-		if (publisherService.isFormBlank(form)) newForm = new PublisherForm();
+		BookForm newForm = form;
+		if (bookService.isFormBlank(form)) newForm = new BookForm();
 		model.addAttribute("form", newForm);
 
-		return "publisher/index";
+		return "book/index";
 	}
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public String save(
 			@PathVariable String language,
-			@Validated(PublisherForm.CreateValidations.class) @ModelAttribute("form") PublisherForm form,
-			BindingResult errors,
+			@Validated(BookForm.CreateValidations.class) @ModelAttribute("form") BookForm form,
+			BindingResult result,
 			@ModelAttribute("pageable") Pageable pageable,
 			@ModelAttribute("searchUrl") String searchUrl,
 			Model model,
@@ -249,45 +202,45 @@ public class PublisherController {
 		buttons.add(Actions.CANCEL.toString());
 		model.addAttribute("buttons", buttons);
 
-		if (errors.hasErrors()) {
-			return "publisher/index";
+		if (result.hasErrors()) {
+			return "book/index";
 		}
 
-		Publisher publisher = null;
+		Book book = null;
 		try {
-			publisher = publisherService.createPublisher(form, authorizedUser);
+			book = bookService.createBook(form, authorizedUser);
 		}
 		catch (EmptyCodeException e) {
-			errors.rejectValue("code", "NotNull");
+			result.rejectValue("code", "NotNull");
 		}
 		catch (DuplicateCodeException e) {
-			errors.rejectValue("code", "NotDuplicate");
+			result.rejectValue("code", "NotDuplicate");
 		}
-		if (errors.hasErrors()) {
-			return "publisher/index";
+		if (result.hasErrors()) {
+			return "book/index";
 		}
 
-		redirectAttributes.addFlashAttribute("savedPublisher", publisher);
+		redirectAttributes.addFlashAttribute("savedBook", book);
 		redirectAttributes.addAttribute("language", language);
-		redirectAttributes.addAttribute("id", publisher.getId());
+		redirectAttributes.addAttribute("id", book.getId());
 
-		publisherService.searchAndSetPagination(form, language, pageable,
-				publisherService.buildSearchUrl(searchUrl), model);
-		return "redirect:/_admin/{language}/publisher/show";
+		bookService.searchAndSetPagination(form, language, pageable,
+				bookService.buildSearchUrl(searchUrl), model);
+		return "redirect:/_admin/{language}/book/show";
 	}
 
 	@RequestMapping(value = "/edit", method = RequestMethod.POST)
 	public String edit(
 			@PathVariable String language,
-			@ModelAttribute("form") PublisherForm form,
+			@ModelAttribute("form") BookForm form,
 			Model model,
 			RedirectAttributes redirectAttributes) {
 		if (form.getId() == null) {
-			redirectAttributes.addFlashAttribute("noPublisherSelected", true);
-			return "redirect:/_admin/{language}/publisher/search";
+			redirectAttributes.addFlashAttribute("noBookSelected", true);
+			return "redirect:/_admin/{language}/book/search";
 		}
-		Publisher publisher = publisherService.getPublisherById(form.withLanguage(language).getId());
-		model.addAttribute("selectedPublisher", publisher);
+		Book book = bookService.getBookById(form.withLanguage(language).getId());
+		model.addAttribute("selectedBook", book);
 
 		Set<String> buttons = new HashSet<>();
 		buttons.add(Actions.UPDATE.toString());
@@ -295,22 +248,22 @@ public class PublisherController {
 		buttons.add(Actions.CANCEL.toString());
 		model.addAttribute("buttons", buttons);
 
-		PublisherForm newForm = form;
-		if (publisherService.isFormBlank(form)) {
-			newForm = PublisherForm.createFormfromDomainObject(publisher)
+		BookForm newForm = form;
+		if (bookService.isFormBlank(form)) {
+			newForm = BookForm.createFormfromDomainObject(book)
 					.withKeyword(form.getKeyword());
 		}
 		model.addAttribute("form", newForm);
 
-		return "publisher/index";
+		return "book/index";
 	}
 
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
 	public String update(
 			@PathVariable String language,
-			@Validated(PublisherForm.UpdateValidations.class) @ModelAttribute("form") PublisherForm form,
-			BindingResult errors,
-			@ModelAttribute("pagination") Pagination<Publisher> pagination,
+			@Validated(BookForm.UpdateValidations.class) @ModelAttribute("form") BookForm form,
+			BindingResult result,
+			@ModelAttribute("pagination") Pagination<Book> pagination,
 			@ModelAttribute("pageable") Pageable pageable,
 			@ModelAttribute("searchUrl") String searchUrl,
 			Model model,
@@ -322,114 +275,117 @@ public class PublisherController {
 		buttons.add(Actions.CANCEL.toString());
 		model.addAttribute("buttons", buttons);
 
-		if (errors.hasErrors()) {
-			logger.debug("Errors: {}", errors);
-			Publisher publisher = publisherService.getPublisherById(form.getId());
-			model.addAttribute("selectedPublisher", publisher);
-			return "publisher/index";
+		if (result.hasErrors()) {
+			logger.debug("Errors: {}", result);
+			Book book = bookService.getBookById(form.getId());
+			model.addAttribute("selectedBook", book);
+			return "book/index";
 		}
 
-		Publisher publisher = null;
+		Book book = null;
 		try {
-			publisher = publisherService.updatePublisher(form, authorizedUser);
+			book = bookService.updateBook(form, authorizedUser);
 		}
 		catch (EmptyCodeException e) {
-			errors.rejectValue("code", "NotNull");
+			result.rejectValue("code", "NotNull");
 		}
 		catch (DuplicateCodeException e) {
-			errors.rejectValue("code", "NotDuplicate");
+			result.rejectValue("code", "NotDuplicate");
 		}
-		if (errors.hasErrors()) {
-			logger.debug("Errors: {}", errors);
-			return "publisher/index";
+		if (result.hasErrors()) {
+			logger.debug("Errors: {}", result);
+			return "book/index";
 		}
-		model.addAttribute("selectedPublisher", publisher);
+		model.addAttribute("selectedBook", book);
 
-		redirectAttributes.addFlashAttribute("savedPublisher", publisher);
+		redirectAttributes.addFlashAttribute("savedBook", book);
 		redirectAttributes.addAttribute("language", language);
-		redirectAttributes.addAttribute("id", publisher.getId());
+		redirectAttributes.addAttribute("id", book.getId());
 		redirectAttributes.addAttribute("page", pagination.getCurrentPageNumber());
 
-		publisherService.searchAndSetPagination(form, language, pageable,
-				publisherService.buildSearchUrl(searchUrl), model);
-		return "redirect:/_admin/{language}/publisher/show";
+		bookService.searchAndSetPagination(form, language, pageable,
+				bookService.buildSearchUrl(searchUrl), model);
+		return "redirect:/_admin/{language}/book/show";
 	}
 
 	@RequestMapping(value = "/delete", method = RequestMethod.POST)
 	public String delete(
 			@PathVariable String language,
-			@ModelAttribute("form") PublisherForm form,
-			BindingResult errors,
+			@ModelAttribute("form") BookForm form,
+			BindingResult result,
 			@RequestParam int page,
-			@ModelAttribute("publishers") Page<Publisher> publishers,
+			@ModelAttribute("books") Page<Book> books,
 			@ModelAttribute("pageable") Pageable pageable,
 			@ModelAttribute("searchUrl") String searchUrl,
 			Model model,
 			AuthorizedUser authorizedUser,
 			RedirectAttributes redirectAttributes) {
-		if (errors.hasErrors()) {
-			logger.debug("Errors: {}", errors);
-			return "redirect:/_admin/{language}/publisher/search";
+		if (result.hasErrors()) {
+			logger.debug("Errors: {}", result);
+			return "redirect:/_admin/{language}/book/search";
 		}
 
-		Publisher publisher = null;
+		Book book = null;
 		try {
-			publisher = publisherService.deletePublisher(form, authorizedUser);
+			book = bookService.deleteBook(form, authorizedUser);
 		}
 		catch (ValidationException e) {
-			if (errors.hasErrors()) {
-				logger.debug("Errors: {}", errors);
-				return "redirect:/_admin/{language}/publisher/search";
+			if (result.hasErrors()) {
+				logger.debug("Errors: {}", result);
+				return "redirect:/_admin/{language}/book/search";
 			}
 			throw e;
 		}
 
 		List<String> errorMessages = null;
-		if (errors.hasErrors()) {
+		if (result.hasErrors()) {
 			errorMessages = new ArrayList<>();
-			for (ObjectError error : errors.getAllErrors()) {
+			for (ObjectError error : result.getAllErrors()) {
 				errorMessages.add(messageSourceAccessor.getMessage(error));
 			}
 		}
 
-		redirectAttributes.addFlashAttribute("deletedPublisher", publisher);
+		redirectAttributes.addFlashAttribute("deletedBook", book);
 		redirectAttributes.addFlashAttribute("errorMessages", errorMessages);
 		redirectAttributes.addAttribute("page", page);
 
-		if (publishers.getContent().size() > 1) {
-			publisherService.searchAndSetPagination(form, language, pageable,
-					publisherService.buildSearchUrl(searchUrl), model);
-			publishers = (Page<Publisher>) model.asMap().get("publishers");
-			Publisher firstPublisher = publishers.getContent().get(0);
-			redirectAttributes.addAttribute("id", firstPublisher.getId());
-			return "redirect:/_admin/{language}/publisher/show";
+		if (books.getContent().size() > 1) {
+			bookService.searchAndSetPagination(form, language, pageable,
+					bookService.buildSearchUrl(searchUrl), model);
+			books = (Page<Book>) model.asMap().get("books");
+			Book firstBook = books.getContent().get(0);
+			redirectAttributes.addAttribute("id", firstBook.getId());
+			return "redirect:/_admin/{language}/book/show";
 		}
 
 		if (page > 0) {
 			redirectAttributes.addAttribute("page", page - 1);
 		}
-		return "redirect:/_admin/{language}/publisher/search";
+		return "redirect:/_admin/{language}/book/search";
 	}
 
 	@RequestMapping(value = "/report", method = RequestMethod.POST)
 	public ResponseEntity<byte[]> getReportPdf(
 			@PathVariable String language,
-			@ModelAttribute("form") PublisherForm form) {
+			@ModelAttribute("form") BookForm form) {
 		// Taken from http://blog.triadworks.com.br/jasperreports-gerando-relatorios-pdf-na-web
-		final InputStream inStream = getClass().getResourceAsStream("/jasperreport/publishers.jrxml");
+		final InputStream inStream = getClass().getResourceAsStream("/jasperreport/books.jrxml");
 		JasperReport jasper = ReportUtils.compileReport(inStream);
 
 		// Taken from https://stackoverflow.com/a/27532493
 		Map<String, Object> params = new HashMap<>();
 
 		// Used the second solution from https://stackoverflow.com/a/30562269
+		// Since JDK 9 or below reads property files in ISO-8859-1 by default
+		// according to http://www.javapractices.com/topic/TopicAction.do?Id=208,
+		// set the encoding to UTF-8.
 		Locale.setDefault(ReportUtils.getLocale(language));
 		ResourceBundle bundle = ResourceBundle.getBundle("messages/messages", new CustomResourceBundleControl("UTF-8"));
 		params.put("REPORT_RESOURCE_BUNDLE", bundle);
 
 		JasperPrint jasperPrint = null;
 		try {
-			List<Publisher> results = publisherService.getPublishers(form).getContent();
+			List<Book> results = bookService.getBooks(form).getContent();
 			JRDataSource beanDataSource = new JRBeanCollectionDataSource(results);
 			jasperPrint = JasperFillManager.fillReport(jasper, params, beanDataSource);
 		} catch (JRException e) {
@@ -437,7 +393,7 @@ public class PublisherController {
 		}
 
 		// Copied from https://stackoverflow.com/a/16656382
-		String filename = "publishersReport.pdf";
+		String filename = "booksReport.pdf";
 		HttpHeaders headers = ReportUtils.getHttpHeaders(filename);
 		ResponseEntity<byte[]> response = ReportUtils.exportReportToPdf(jasperPrint, headers);
 		return response;

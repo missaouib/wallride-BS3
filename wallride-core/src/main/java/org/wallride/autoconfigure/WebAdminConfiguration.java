@@ -40,6 +40,7 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.wallride.author.controller.AuthorController;
+import org.wallride.book.controller.BookController;
 import org.wallride.publisher.controller.PublisherController;
 import org.wallride.service.BlogService;
 import org.wallride.support.CodeFormatAnnotationFormatterFactory;
@@ -55,7 +56,8 @@ import java.util.Set;
 basePackageClasses = {
 		DashboardController.class,
 		PublisherController.class,
-		AuthorController.class
+		AuthorController.class,
+		BookController.class
 })
 public class WebAdminConfiguration extends DelegatingWebMvcConfiguration {
 

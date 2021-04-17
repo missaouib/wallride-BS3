@@ -30,7 +30,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.FlashMap;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
 import org.wallride.author.service.AuthorService;
 import org.wallride.domain.Author;
 import org.wallride.exception.DuplicateCodeException;
@@ -39,13 +41,12 @@ import org.wallride.author.service.AuthorService.Actions;
 import org.wallride.support.AuthorizedUser;
 import org.wallride.support.CustomResourceBundleControl;
 import org.wallride.support.ReportUtils;
+import org.wallride.web.support.DomainObjectSavedModel;
 import org.wallride.web.support.Pagination;
 import org.wallride.web.support.RestValidationErrorModel;
 
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -53,13 +54,13 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.ValidationException;
 
 import java.io.InputStream;
@@ -141,6 +142,53 @@ public class AuthorController {
 		model.addAttribute("buttons", buttons);
 
 		return "author/index";
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/list", method = RequestMethod.POST)
+	public List<Author> list(
+			@PathVariable String language,
+			@RequestParam String keyword) {
+		AuthorForm form = new AuthorForm()
+				.withKeyword(keyword)
+				.withLanguage(language);
+		return authorService.getAuthors(form).getContent();
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/get", method = RequestMethod.POST)
+	public Author get(@RequestParam Long id) {
+		return authorService.getAuthorById(id);
+	}
+
+	@RequestMapping(value="/authors", method=RequestMethod.POST)
+	public @ResponseBody DomainObjectSavedModel<Long> authors(
+			@Validated(AuthorForm.CreateValidations.class) AuthorForm form,
+			BindingResult result,
+			AuthorizedUser authorizedUser,
+			HttpServletRequest request,
+			HttpServletResponse response) throws BindException {
+		if (result.hasErrors()) {
+			throw new BindException(result);
+		}
+
+		Author author = null;
+		try {
+			author = authorService.createAuthor(form, authorizedUser);
+		} catch (EmptyCodeException e) {
+			result.rejectValue("code", "NotNull");
+		}
+		catch (DuplicateCodeException e) {
+			result.rejectValue("code", "NotDuplicate");
+		}
+		if (result.hasErrors()) {
+			throw new BindException(result);
+		}
+
+		FlashMap flashMap = RequestContextUtils.getOutputFlashMap(request);
+		flashMap.put("savedAuthor", author);
+		RequestContextUtils.getFlashMapManager(request).saveOutputFlashMap(flashMap, request, response);
+		return new DomainObjectSavedModel<>(author);
 	}
 
 	@RequestMapping(value = "/show", method = {RequestMethod.GET, RequestMethod.POST})

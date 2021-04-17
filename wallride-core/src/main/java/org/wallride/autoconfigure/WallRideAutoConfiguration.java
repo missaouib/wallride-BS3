@@ -30,6 +30,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.wallride.author.repository.AuthorRepository;
 import org.wallride.author.service.AuthorService;
+import org.wallride.book.repository.BookRepository;
+import org.wallride.book.service.BookService;
 import org.wallride.publisher.repository.PublisherRepository;
 import org.wallride.publisher.service.PublisherService;
 import org.wallride.repository.BlogRepository;
@@ -43,7 +45,8 @@ import org.wallride.service.BlogService;
 basePackageClasses = {
 		BlogRepository.class,
 		PublisherRepository.class,
-		AuthorRepository.class
+		AuthorRepository.class,
+		BookRepository.class
 })
 @Import({
 		WallRideCacheConfiguration.class,
@@ -61,7 +64,8 @@ basePackageClasses = {
 basePackageClasses = {
 		BlogService.class,
 		PublisherService.class,
-		AuthorService.class
+		AuthorService.class,
+		BookService.class
 })
 public class WallRideAutoConfiguration {
 

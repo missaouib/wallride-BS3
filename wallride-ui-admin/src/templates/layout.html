@@ -125,6 +125,7 @@
 						<ul class="dropdown-menu">
 							<li role="presentation" class="dropdown-item"><a th:href="@{__${ADMIN_PATH}__/publisher/search}" th:classappend="${#strings.startsWith(#request.requestURI, '__${ADMIN_PATH}__/publisher')} ? active" role="menuitem" tabindex="-1"><span data-feather="archive"></span> <span th:text="#{Publisher}">Publisher</span></a></li>
 							<li role="presentation" class="dropdown-item"><a th:href="@{__${ADMIN_PATH}__/author/search}" th:classappend="${#strings.startsWith(#request.requestURI, '__${ADMIN_PATH}__/author')} ? active" role="menuitem" tabindex="-1"><span data-feather="user"></span> <span th:text="#{Author}">Author</span></a></li>
+							<li role="presentation" class="dropdown-item"><a th:href="@{__${ADMIN_PATH}__/book/search}" th:classappend="${#strings.startsWith(#request.requestURI, '__${ADMIN_PATH}__/book')} ? active" role="menuitem" tabindex="-1"><span data-feather="book"></span> <span th:text="#{Book}">Book</span></a></li>
 						</ul>
 					</li>
 				</ul>

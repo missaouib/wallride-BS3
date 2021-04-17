@@ -898,7 +898,12 @@ img.fr-dii {
 	background-color: yellow;
 }
 
+/***** library *****/
 .input-group-text {
 	color: #ffffff;
 	background-color: #0e6eb8;
+}
+.modal-search-results {
+	max-height: 200px;
+	overflow-y: scroll;
 }
