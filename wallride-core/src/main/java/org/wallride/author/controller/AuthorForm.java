@@ -117,7 +117,7 @@ public class AuthorForm implements Serializable {
 		return true;
 	}
 
-	public static AuthorForm createFormfromDomainObject(Author author) {
+	public static AuthorForm createFormFromDomainObject(Author author) {
 		AuthorForm request = new AuthorForm();
 		BeanUtils.copyProperties(author, request);
 

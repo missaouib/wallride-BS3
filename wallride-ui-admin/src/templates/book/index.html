@@ -106,18 +106,45 @@
 						</div>
 						<div class="input-group mb-3">
 							<div class="input-group-prepend">
-								<span class="input-group-text" for="authorId" th:text="#{Author}">Author</label>
+								<span class="input-group-text" for="authorIds" th:text="#{Author}">Author</label>
 							</div>
 							<input type="text" id="author" class="form-control" th:readonly="true" th:attr="placeholder=#{Author}"
-									th:classappend="${#fields.hasErrors('authorId')}? is-invalid" />
-							<input type="hidden" th:field="*{authorId}" th:value="*{authorId}" />
+									th:classappend="${#fields.hasErrors('authorIds')}? is-invalid" />
+							<ul class="sortable">
+								<th:block th:if="*{authorIds ne null}">
+									<li class="option col-sm-7 d-flex justify-content-between" th:each="authorId : *{authorIds}">
+										<div>
+											<span class="grippy"></span>
+											<div class="field-option" th:attr="data-name=${authorId}" th:text="${authorId}"></div>
+										</div>
+										<button class="btn btn-link remove" data-dismiss="author"><span class="fa fa-remove"></span></button>
+									</li>
+								</th:block>
+								<script id="author-tmpl" type="text/x-jsrender">
+								<li class="option col-sm-7 d-flex justify-content-between">
+									<div>
+										<span class="grippy"></span>
+										<div class="field-option"></div>
+									</div>
+									<button class="btn btn-link remove" data-dismiss="author"><span class="fa fa-remove"></span></button>
+								</li>
+								</script>
+							</ul>
+							<!-- <div th:each="authorId : *{authorIds}">
+								<input type="hidden" name="authorId" class="authorId" th:value="authorId" />
+							</div> -->
 							<div class="input-group-append">
 								<button type="button" class="btn btn-link" data-toggle="modal" data-target="#author-modal"
 										th:disabled="${#sets.contains(buttons, 'SHOW')}">
 									<span data-feather="user"></span> <span th:text="#{Reference}">Reference</span>
 								</button>
+								<span id="add-author-btn">
+									<a href="#" class="btn btn-link" data-append="author">
+										<span data-feather="plus"></span> <span th:text="#{Add}">Add</span>
+									</a>
+								</span>
 							</div>
-							<span class="invalid-feedback" th:each="err : ${#fields.errors('authorId')}" th:text="${err}"></span>
+							<span class="invalid-feedback" th:each="err : ${#fields.errors('authorIds')}" th:text="${err}"></span>
 						</div>
 						<div class="input-group mb-3">
 							<div class="input-group-prepend">
@@ -257,6 +284,19 @@
 							if (e.which === 13) {
 								// Submit the form action for left-most action button (add, save, or update).
 							}
+						}).on('click', '#add-author-btn', function(e) {
+							logger.info('enter');
+							let $authorInput = $('#author');
+
+							$('.sortable').on('click', '[data-append="author"]', function() {
+								var tmpl = $.templates("#author-tmpl");
+								var content = tmpl.render();
+								// $('.field-option', $content).attr('data-name', customInputOption).text(customInputOption);
+								$('.sortable').append(content);
+								//$customInput.val('').focus().closest('.form-group').removeClass('has-error');
+								$authorInput.val('').focus().removeClass('is-invalid');
+							});
+							return false;
 						});
 						$('#delete-modal').on('change', ':input[name="confirmed"]', function () {
 							var confirmed = $(this);
@@ -275,7 +315,7 @@
 								// If there are no items, go to the search form.
 								let books = /*[[${books.getContent()}]]*/ [];
 
-								if (books.length === 0) {
+								if (books != null && books.length === 0) {
 									// The cancel button's data-action attribute has the value .../show.
 									
 									action = action.replace('show', 'search');
@@ -300,7 +340,7 @@
 					});
 					$(window).on('load', function(e) {
 						let authorId = $('#authorId').val();
-						if (authorId.length != 0) {
+						if (authorId != null && authorId.length != 0) {
 							$.ajax({
 								url: /*[[@{__${ADMIN_PATH}__/author/get}]]*/ '#',
 								type: 'post',
@@ -321,7 +361,7 @@
 						}
 
 						let publisherId = $('#publisherId').val();
-						if (publisherId.length != 0) {
+						if (publisherId != null && publisherId.length != 0) {
 							$.ajax({
 								url: /*[[@{__${ADMIN_PATH}__/publisher/get}]]*/ '#',
 								type: 'post',

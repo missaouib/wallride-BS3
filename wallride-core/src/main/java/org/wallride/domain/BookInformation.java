@@ -1,5 +1,8 @@
 package org.wallride.domain;
 
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,7 +10,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedEntityGraphs;
 import javax.persistence.Table;
@@ -15,6 +22,7 @@ import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.SortNatural;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
@@ -25,8 +33,13 @@ import org.hibernate.search.annotations.SortableField;
 
 @Entity
 @NamedEntityGraphs({
-    @NamedEntityGraph(name = BookInformation.SHALLOW_GRAPH_NAME),
-    @NamedEntityGraph(name = BookInformation.DEEP_GRAPH_NAME)
+    @NamedEntityGraph(name = BookInformation.SHALLOW_GRAPH_NAME,
+			attributeNodes = {
+					@NamedAttributeNode("authors")}
+	),
+    @NamedEntityGraph(name = BookInformation.DEEP_GRAPH_NAME,
+			attributeNodes = {
+					@NamedAttributeNode("authors")})
 })
 @Table(name = "book_information", uniqueConstraints = @UniqueConstraint(columnNames = {"code", "language"}))
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -62,9 +75,14 @@ public class BookInformation extends DomainObject<Long> {
 	@Field
 	private String title;
 
-	@ManyToOne
+	@ManyToMany
+	@JoinTable(
+			name = "book_author",
+			joinColumns = {@JoinColumn(name = "book_id")},
+			inverseJoinColumns = @JoinColumn(name = "author_id", referencedColumnName = "id"))
+	@SortNatural
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
-	private Author author;
+	private SortedSet<Author> authors = new TreeSet<>();
 
     @ManyToOne
 	@IndexedEmbedded(includeEmbeddedObjectId = true)
@@ -109,12 +127,12 @@ public class BookInformation extends DomainObject<Long> {
         this.title = title;
     }
 
-	public Author getAuthor() {
-		return author;
+	public SortedSet<Author> getAuthors() {
+		return authors;
 	}
 
-	public void setAuthor(Author author) {
-		this.author = author;
+	public void setAuthors(SortedSet<Author> authors) {
+		this.authors = authors;
 	}
 
 	public Publisher getPublisher() {

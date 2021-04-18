@@ -163,7 +163,7 @@ public class BookController {
 		model.addAttribute("selectedBook", book);
 		model.addAttribute("pagination", new Pagination<>(books, bookService.buildSearchUrl(searchUrl)));
 
-		BookForm editForm = BookForm.createFormfromDomainObject(book);
+		BookForm editForm = BookForm.createFormFromDomainObject(book);
 		model.addAttribute("form", editForm.withKeyword(form.getKeyword()));
 		return "book/index";
 	}
@@ -250,7 +250,7 @@ public class BookController {
 
 		BookForm newForm = form;
 		if (bookService.isFormBlank(form)) {
-			newForm = BookForm.createFormfromDomainObject(book)
+			newForm = BookForm.createFormFromDomainObject(book)
 					.withKeyword(form.getKeyword());
 		}
 		model.addAttribute("form", newForm);

@@ -1,6 +1,7 @@
 package org.wallride.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedEntityGraphs;
 import javax.persistence.Table;
@@ -12,8 +13,13 @@ import org.hibernate.search.annotations.Indexed;
 
 @Entity
 @NamedEntityGraphs({
-    @NamedEntityGraph(name = Book.SHALLOW_GRAPH_NAME),
-    @NamedEntityGraph(name = Book.DEEP_GRAPH_NAME)
+    @NamedEntityGraph(name = Book.SHALLOW_GRAPH_NAME,
+			attributeNodes = {
+					@NamedAttributeNode("authors")}
+	),
+    @NamedEntityGraph(name = Book.DEEP_GRAPH_NAME,
+			attributeNodes = {
+					@NamedAttributeNode("authors")})
 })
 @Table(name = "book")
 @DynamicInsert

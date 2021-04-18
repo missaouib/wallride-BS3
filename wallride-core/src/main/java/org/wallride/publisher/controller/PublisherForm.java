@@ -135,7 +135,7 @@ public class PublisherForm implements Serializable {
 		return true;
 	}
 
-	public static PublisherForm createFormfromDomainObject(Publisher publisher) {
+	public static PublisherForm createFormFromDomainObject(Publisher publisher) {
 		PublisherForm request = new PublisherForm();
 		BeanUtils.copyProperties(publisher, request);
 

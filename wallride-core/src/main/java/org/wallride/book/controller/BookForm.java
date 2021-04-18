@@ -17,6 +17,8 @@
 package org.wallride.book.controller;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
@@ -25,6 +27,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
+import org.wallride.domain.Author;
 import org.wallride.domain.Book;
 
 public class BookForm implements Serializable {
@@ -37,7 +40,7 @@ public class BookForm implements Serializable {
 	@NotNull(groups = {CreateValidations.class, UpdateValidations.class}) private String code;
 	private String language;
 	@NotNull(groups = {CreateValidations.class, UpdateValidations.class}) private String title;
-	private String authorId;
+	private Set<Long> authorIds = new HashSet<>();
 	private String publisherId;
 	private String description;
 	private String isbn;
@@ -81,12 +84,12 @@ public class BookForm implements Serializable {
 		this.title = title;
 	}
 
-	public String getAuthorId() {
-		return authorId;
+	public Set<Long> getAuthorIds() {
+		return authorIds;
 	}
 
-	public void setAuthorId(String authorId) {
-		this.authorId = authorId;
+	public void setAuthorIds(Set<Long> authorIds) {
+		this.authorIds = authorIds;
 	}
 
 	public String getPublisherId() {
@@ -144,12 +147,15 @@ public class BookForm implements Serializable {
 		return true;
 	}
 
-	public static BookForm createFormfromDomainObject(Book book) {
+	public static BookForm createFormFromDomainObject(Book book) {
 		BookForm form = new BookForm();
 		BeanUtils.copyProperties(book, form);
 
 		form.setPublisherId(book.getPublisher() != null ? Long.toString(book.getPublisher().getId()) : null);
-		form.setAuthorId(book.getAuthor() != null ? Long.toString(book.getAuthor().getId()) : null);
+
+		for (Author author : book.getAuthors()) {
+			form.getAuthorIds().add(author.getId());
+		}
 
 		return form;
 	}

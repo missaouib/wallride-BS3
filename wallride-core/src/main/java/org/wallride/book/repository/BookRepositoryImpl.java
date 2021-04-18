@@ -24,6 +24,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.Session;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
@@ -56,7 +57,8 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
 	@Override
 	public Page<Book> search(BookForm form, Pageable pageable) {
 		Session session = (Session) entityManager.getDelegate();
-		Criteria criteria = session.createCriteria(Book.class);
+		Criteria criteria = session.createCriteria(Book.class)
+				.setFetchMode("authors", FetchMode.JOIN);
 
 		FullTextQuery persistenceQuery = buildFullTextQuery(form, pageable, criteria);
 		int resultSize = persistenceQuery.getResultSize();
@@ -87,7 +89,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
 		if (StringUtils.hasText(form.getKeyword())) {
 			Analyzer analyzer = fullTextEntityManager.getSearchFactory().getAnalyzer("synonyms");
 			String[] fields = new String[] {
-					"code", "title", "description", "author.name"
+					"code", "title", "description", "authors.name"
 			};
 			MultiFieldQueryParser parser = new MultiFieldQueryParser(fields, analyzer);
 			parser.setDefaultOperator(QueryParser.Operator.AND);

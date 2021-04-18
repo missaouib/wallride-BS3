@@ -77,11 +77,10 @@ public class BookService {
 		book.setLanguage(form.getLanguage());
 		book.setTitle(form.getTitle());
 
-		Author author = null;
-		if (form.getAuthorId() != null) {
-			author = entityManager.getReference(Author.class, Long.parseLong(form.getAuthorId()));
+		book.getAuthors().clear();
+		for (long authorId : form.getAuthorIds()) {
+			book.getAuthors().add(entityManager.getReference(Author.class, authorId));
 		}
-		book.setAuthor(author);
 
 		Publisher publisher = null;
 		if (form.getPublisherId() != null) {
@@ -121,11 +120,10 @@ public class BookService {
 		book.setLanguage(form.getLanguage());
 		book.setTitle(form.getTitle());
 
-		Author author = null;
-		if (form.getAuthorId() != null) {
-			author = entityManager.getReference(Author.class, Long.parseLong(form.getAuthorId()));
+		book.getAuthors().clear();
+		for (long authorId : form.getAuthorIds()) {
+			book.getAuthors().add(entityManager.getReference(Author.class, authorId));
 		}
-		book.setAuthor(author);
 
 		Publisher publisher = null;
 		if (form.getPublisherId() != null) {
@@ -172,12 +170,12 @@ public class BookService {
 	public boolean isFormBlank(BookForm form) {
 		boolean isCodeEdited = form.getCode() != null && !form.getCode().isEmpty();
 		boolean isTitleEdited = form.getTitle() != null && !form.getTitle().isEmpty();
-		boolean isAuthorIdEdited = form.getAuthorId() != null && !form.getAuthorId().isEmpty();
+		boolean isAuthorIdsEdited = form.getAuthorIds() != null && !form.getAuthorIds().isEmpty();
 		boolean isPublisherEdited = form.getPublisherId() != null && !form.getPublisherId().isEmpty();
 		boolean isDescriptionEdited = form.getDescription() != null && !form.getDescription().isEmpty();
 		boolean isIsbnEdited = form.getIsbn() != null && !form.getIsbn().isEmpty();
 		boolean isKeywordEdited = form.getKeyword() != null && !form.getKeyword().isEmpty();
-		return !(isCodeEdited || isTitleEdited || isAuthorIdEdited || isPublisherEdited
+		return !(isCodeEdited || isTitleEdited || isAuthorIdsEdited || isPublisherEdited
 				|| isIsbnEdited || isDescriptionEdited || isKeywordEdited);
 	}
 

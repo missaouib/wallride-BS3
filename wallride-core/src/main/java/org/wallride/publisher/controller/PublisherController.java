@@ -210,7 +210,7 @@ public class PublisherController {
 		model.addAttribute("selectedPublisher", publisher);
 		model.addAttribute("pagination", new Pagination<>(publishers, publisherService.buildSearchUrl(searchUrl)));
 
-		PublisherForm editForm = PublisherForm.createFormfromDomainObject(publisher);
+		PublisherForm editForm = PublisherForm.createFormFromDomainObject(publisher);
 		model.addAttribute("form", editForm.withKeyword(form.getKeyword()));
 		return "publisher/index";
 	}
@@ -297,7 +297,7 @@ public class PublisherController {
 
 		PublisherForm newForm = form;
 		if (publisherService.isFormBlank(form)) {
-			newForm = PublisherForm.createFormfromDomainObject(publisher)
+			newForm = PublisherForm.createFormFromDomainObject(publisher)
 					.withKeyword(form.getKeyword());
 		}
 		model.addAttribute("form", newForm);

@@ -210,7 +210,7 @@ public class AuthorController {
 		model.addAttribute("selectedAuthor", author);
 		model.addAttribute("pagination", new Pagination<>(authors, authorService.buildSearchUrl(searchUrl)));
 
-		AuthorForm editForm = AuthorForm.createFormfromDomainObject(author);
+		AuthorForm editForm = AuthorForm.createFormFromDomainObject(author);
 		model.addAttribute("form", editForm.withKeyword(form.getKeyword()));
 		return "author/index";
 	}
@@ -297,7 +297,7 @@ public class AuthorController {
 
 		AuthorForm newForm = form;
 		if (authorService.isFormBlank(form)) {
-			newForm = AuthorForm.createFormfromDomainObject(author)
+			newForm = AuthorForm.createFormFromDomainObject(author)
 					.withKeyword(form.getKeyword());
 		}
 		model.addAttribute("form", newForm);
