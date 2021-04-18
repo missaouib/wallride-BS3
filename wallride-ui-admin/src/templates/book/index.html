@@ -275,7 +275,7 @@
 								// If there are no items, go to the search form.
 								let books = /*[[${books.getContent()}]]*/ [];
 
-								if (books.length === 0) {
+								if (books != null && books.length === 0) {
 									// The cancel button's data-action attribute has the value .../show.
 									
 									action = action.replace('show', 'search');
@@ -300,7 +300,7 @@
 					});
 					$(window).on('load', function(e) {
 						let authorId = $('#authorId').val();
-						if (authorId.length != 0) {
+						if (authorId != null && authorId.length != 0) {
 							$.ajax({
 								url: /*[[@{__${ADMIN_PATH}__/author/get}]]*/ '#',
 								type: 'post',
@@ -321,7 +321,7 @@
 						}
 
 						let publisherId = $('#publisherId').val();
-						if (publisherId.length != 0) {
+						if (publisherId != null && publisherId.length != 0) {
 							$.ajax({
 								url: /*[[@{__${ADMIN_PATH}__/publisher/get}]]*/ '#',
 								type: 'post',
