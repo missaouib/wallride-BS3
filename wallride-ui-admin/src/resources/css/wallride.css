@@ -895,7 +895,7 @@ img.fr-dii {
 
 /***** search highlighting *****/
 .highlight {
-	background-color: yellow;
+	color: red;
 }
 
 /***** library *****/
