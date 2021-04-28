@@ -54,7 +54,7 @@
 								<div class="pagination-group d-flex align-items-end">
 									<div class="pagination-summary pb-2"><span th:text="${pagination.numberOfFirstElement}"></span> - <span th:text="${pagination.numberOfLastElement}"></span> / <span th:text="${pagination.totalElements}"></span></div>
 									<!-- <div class="pull-right"> -->
-										<ul class="pagination paginateon-sm d-flex flex-wrap mb-0 pb-0">
+										<ul class="pagination pagination-sm d-flex flex-wrap mb-0 pb-0">
 											<li th:classappend="${pagination.hasPreviousPage() ? '' : 'disabled'}"><a th:href="@{${pagination.url}(page=${pagination.previousPageNumber})}" th:text="#{Prev}">Prev</a></li>
 											<li th:each="p : ${pagination.getPageables(pageable)}" th:classappend="${p.pageNumber eq pagination.currentPageNumber ? 'active' : ''}"><a th:href="@{${pagination.url}(page=${p.pageNumber})}" th:text="${p.pageNumber + 1}"></a></li>
 											<li th:classappend="${pagination.hasNextPage() ? '' : 'disabled'}"><a th:href="@{${pagination.url}(page=${pagination.nextPageNumber})}" th:text="#{Next}">Next</a></li>

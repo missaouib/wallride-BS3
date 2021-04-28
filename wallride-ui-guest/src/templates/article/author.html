@@ -34,7 +34,7 @@
 					<div class="pagination-group pull-right">
 						<div class="pull-left pagination-summary"><span th:text="${pagination.numberOfFirstElement}"></span> - <span th:text="${pagination.numberOfLastElement}"></span> / <span th:text="${pagination.totalElements}"></span></div>
 						<div class="pull-right">
-							<ul class="pagination paginateon-sm">
+							<ul class="pagination pagination-sm">
 								<li th:classappend="${pagination.hasPreviousPage() ? '' : 'disabled'}"><a th:href="@{${#users.path(author)}(page=${pagination.previousPageNumber})}" th:text="#{Prev}">Prev</a></li>
 								<li th:each="p : ${.getPageables(pageable)}" th:classappend="${p.pageNumber eq pagination.currentPageNumber ? 'active' : ''}"><a th:href="@{${#users.path(author)}(page=${p.pageNumber},size=${p.pageSize})}" th:text="${p.pageNumber + 1}"></a></li>
 								<li th:classappend="${pagination.hasNextPage() ? '' : 'disabled'}"><a th:href="@{${#users.path(author)}(page=${pagination.nextPageNumber})}" th:text="#{Next}">Next</a></li>
