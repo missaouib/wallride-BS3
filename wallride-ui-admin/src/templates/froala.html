@@ -47,11 +47,9 @@
 						};
 
 				// Define a global icon (any Font Awesome icon).
-				// $.FroalaEditor.DefineIcon(iconName, { NAME: 'plus' });
 				FroalaEditor.DefineIcon(iconName, { NAME: 'plus', SVG_KEY: 'add' });
 
 				// Define a global dropdown button for the Froala WYSIWYG HTML editor.
-				// $.FroalaEditor.RegisterCommand(commandName, {
 				FroalaEditor.RegisterCommand(commandName, {
 					title: 'Layout',
 					type: 'dropdown',
@@ -63,7 +61,6 @@
 					focus: true,
 					refreshAfterCallback: true,
 
-					// callback: function (cmd, val, params) {
 					callback: function (cmd, val) {
 						var editorInstance = this;
 						editorInstance.html.insert(ms[val].value);
@@ -77,7 +74,6 @@
 						// access custom function added to froalaOptions on instance
 
 						$.each(placeholders, function (i, placeholder) {
-							// listItems += buildListItem(placeholder.name, placeholder.value);
 							let translatedName = editorInstance.language.translate(placeholder.name);
 							listItems += buildListItem(translatedName, placeholder.value);
 						});
@@ -92,12 +88,10 @@
 					}
 				});
 
-				let lang = /*[[${#locale}]]*/ 'en';				
-				//logger.info('在 froala.html: %s', JSON.stringify(lang.toLowerCase()));
-			
+				let lang = /*[[${#locale}]]*/ 'en';
+
 				var selector = /*[[${selector}]]*/ '#';
-				// $(selector).froalaEditor({
-				new FroalaEditor(selector, {	
+				new FroalaEditor(selector, {
 					toolbarButtons: ['paragraphFormat', 'placeholders', 'bold', 'underline', 'formatUL', 'color', 'align', 'quote', 'insertLink', 'insertImage', 'insertVideo', 'insertFile', 'insertTable', 'undo', 'redo', 'html', 'fullscreen'],
 					heightMin: 300,
 					imageDefaultWidth: 0,
