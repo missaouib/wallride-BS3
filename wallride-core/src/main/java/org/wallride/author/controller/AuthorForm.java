@@ -33,12 +33,22 @@ public class AuthorForm implements Serializable {
 
 	interface CreateValidations {}
 	interface UpdateValidations {}
-	@NotNull(groups = {UpdateValidations.class}) private Long id;
-	@NotNull(groups = {CreateValidations.class, UpdateValidations.class}) private String code;
+	
+	@NotNull(groups = {UpdateValidations.class})
+	private Long id;
+
+	@NotNull(groups = {CreateValidations.class, UpdateValidations.class})
+	private String code;
+
 	private String language;
-	@NotNull(groups = {CreateValidations.class, UpdateValidations.class}) private String name;
+
+	@NotNull(groups = {CreateValidations.class, UpdateValidations.class})
+	private String name;
+
 	private String description;
+
 	private String keyword;
+
 	private boolean confirmed;
 
 	public Long getId() {

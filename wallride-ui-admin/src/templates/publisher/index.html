@@ -16,42 +16,42 @@
 			</h1>
 			<div>
 				<div class="btn-group mr-2">
-					<a th:attr="data-action=@{__${ADMIN_PATH}__/publisher/report}" class="btn btn-primary"
+					<button th:attr="data-action=@{__${ADMIN_PATH}__/publisher/report}" class="btn btn-secondary"
 							th:if="!${#lists.isEmpty(publishers.getContent())}">
 						<span data-feather="download"></span> <span th:text="#{Report}">Report</span>
-					</a>
+					</button>
 				</div>
 				<div id="action-buttons" class="btn-group align-items-center">
-					<a type="button" id="add-action" class="btn btn-primary"
+					<button type="button" id="add-action" class="btn btn-primary"
 							value="add" th:if="${#sets.contains(buttons, 'ADD')}"
 							th:attr="data-action=@{__${ADMIN_PATH}__/publisher/create}">
 						<span data-feather="plus"></span> <span th:text="#{Add}">Add</span>
-					</a>
-					<a type="button" id="edit-action" class="btn btn-primary"
+					</button>
+					<button type="button" id="edit-action" class="btn btn-primary"
 							value="edit" th:if="${#sets.contains(buttons, 'EDIT') and (not #lists.isEmpty(publishers.getContent()))}"
 							th:attr="data-action=@{__${ADMIN_PATH}__/publisher/edit}">
 						<span data-feather="edit"></span> <span th:text="#{Edit}">Edit</span>
-					</a>
-					<a type="button" id="save-action" class="btn btn-primary"
+					</button>
+					<button type="button" id="save-action" class="btn btn-primary"
 							value="save" th:if="${#sets.contains(buttons, 'SAVE')}"
 							th:attr="data-action=@{__${ADMIN_PATH}__/publisher/save}">
 						<span data-feather="save"></span> <span th:text="#{Save}">Save</span>
-					</a>
-					<a type="button" id="update-action" class="btn btn-primary"
+					</button>
+					<button type="button" id="update-action" class="btn btn-primary"
 							value="update" th:if="${#sets.contains(buttons, 'UPDATE')}"
 							th:attr="data-action=@{__${ADMIN_PATH}__/publisher/update}">
 						<span data-feather="save"></span> <span th:text="#{Update}">Update</span>
-					</a>
-					<a type="button" id="delete-action" class="btn btn-primary"
+					</button>
+					<button type="button" id="delete-action" class="btn btn-danger"
 							value="delete" th:if="${#sets.contains(buttons, 'DELETE')}"
 							data-toggle="modal" data-target="#delete-modal">
 						<span data-feather="x"></span> <span th:text="#{Delete}">Delete</span>
-					</a>
-					<a type="button" id="cancel-action" class="btn btn-primary"
+					</button>
+					<button type="button" id="cancel-action" class="btn btn-primary"
 							value="cancel" th:if="${#sets.contains(buttons, 'CANCEL')}"
 							th:attr="data-action=@{__${ADMIN_PATH}__/publisher/show}">
 						<span data-feather="corner-up-left"></span> <span th:text="#{Cancel}"></span>
-					</a>
+					</button>
 				</div>
 				<a type="button" id="show-action" class="btn btn-primary d-none"
 						value="show"
@@ -82,71 +82,74 @@
 			<section id="publisher-content">
 				<form id="publisher-form" method="post" th:object="${form}"
 						th:action="@{__${ADMIN_PATH}__/publisher/show}" class="row">
-					<div class="list-group col-8">
+					<div class="pl-0 col-md-8">
 						<div class="alert alert-danger" th:if="${#fields.hasErrors('all')}">
 							<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
 							<span th:text="#{Error}">Error</span>
 						</div>
 						<input type="hidden" name="id" th:value="*{id}"  />
-						<div class="input-group mb-3">
-							<div class="input-group-prepend">
-								<span class="input-group-text" for="code" th:text="#{Code}">Code</span>
+						<div class="form-group row">
+							<label class="col-2 col-form-label" for="code" th:text="#{Code}">Code</label>
+							<div class="col-10">
+								<input type="text" th:field="*{code}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
+										th:classappend="${(#fields.hasErrors('code') ? 'is-invalid' : '') + (#sets.contains(buttons, 'SHOW') ? ' border-0' : '')}" />
+								<span class="invalid-feedback" th:each="err : ${#fields.errors('code')}" th:text="${err}"></span>
+								<span id="mandatory-field-code" th:if="${#lists.isEmpty(#fields.errors('code'))}" th:text="#{MandatoryField}">Mandatory field</span>
 							</div>
-							<input type="text" th:field="*{code}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
-								th:classappend="${#fields.hasErrors('code')} ? 'is-invalid'" th:attr="placeholder=#{Code} + ' (' + #{MandatoryField} + ')'" />
-							<span class="invalid-feedback" th:each="err : ${#fields.errors('code')}" th:text="${err}"></span>
 						</div>
-						<div class="input-group mb-3">
-							<div class="input-group-prepend">
-								<span class="input-group-text" for="name" th:text="#{Name}">Name</label>
+						<div class="form-group row">
+							<label class="col-2 col-form-label" for="name" th:text="#{Name}">Name</label>
+							<div class="col-10">
+								<input type="text" th:field="*{name}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
+										th:classappend="${(#fields.hasErrors('name') ? 'is-invalid' : '') + (#sets.contains(buttons, 'SHOW') ? ' border-0' : '')}" />
+								<span class="invalid-feedback" th:each="err : ${#fields.errors('name')}" th:text="${err}"></span>
+								<span id="mandatory-field-name" th:if="${#lists.isEmpty(#fields.errors('name'))}" th:text="#{MandatoryField}">Mandatory field</span>
 							</div>
-							<input type="text" th:field="*{name}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
-								th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'" th:attr="placeholder=#{Name} + ' (' + #{MandatoryField} + ')'" />
-							<span class="invalid-feedback" th:each="err : ${#fields.errors('name')}" th:text="${err}"></span>
 						</div>
-						<div class="input-group mb-3">
-							<div class="input-group-prepend">
-								<span class="input-group-text" for="country" th:text="#{Country}">Country</label>
+						<div class="form-group row">
+							<label class="col-2 col-form-label" for="country" th:text="#{Country}">Country</label>
+							<div class="col-10">
+								<input type="text" th:field="*{country}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
+										th:classappend="${(#fields.hasErrors('country') ? 'is-invalid' : '') + (#sets.contains(buttons, 'SHOW') ? ' border-0' : '')}" />
+								<span class="invalid-feedback" th:each="err : ${#fields.errors('country')}" th:text="${err}"></span>
 							</div>
-							<input type="text" th:field="*{country}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
-								th:classappend="${#fields.hasErrors('country')} ? 'is-invalid'" th:attr="placeholder=#{Country}" />
-							<span class="invalid-feedback" th:each="err : ${#fields.errors('country')}" th:text="${err}"></span>
 						</div>
-						<div class="input-group mb-3">
-							<div class="input-group-prepend">
-								<span class="input-group-text" for="webpage" th:text="#{Webpage}">Webpage</label>
+						<div class="form-group row">
+							<label class="col-2 col-form-label" for="webpage" th:text="#{Webpage}">Webpage</label>
+							<div class="col-10">
+								<input type="text" th:field="*{webpage}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
+										th:classappend="${(#fields.hasErrors('webpage') ? 'is-invalid' : '') + (#sets.contains(buttons, 'SHOW') ? ' border-0' : '')}" />
+								<span class="invalid-feedback" th:each="err : ${#fields.errors('webpage')}" th:text="${err}"></span>
 							</div>
-							<input type="text" th:field="*{webpage}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
-								th:classappend="${#fields.hasErrors('webpage')} ? 'is-invalid'" th:attr="placeholder=#{Webpage}" />
-							<span class="invalid-feedback" th:each="err : ${#fields.errors('webpage')}" th:text="${err}"></span>
 						</div>
-						<div class="input-group">
-							<div class="input-group-prepend">
-								<span class="input-group-text" for="notes" th:text="#{Notes}">Notes</label>
+						<div class="form-group row">
+							<label class="col-2 col-form-label" for="notes" th:text="#{Notes}">Notes</label>
+							<div class="col-10">
+								<textarea type="text" th:field="*{notes}" class="form-control" style="min-height: 150px"
+										th:readonly="${#sets.contains(buttons, 'SHOW')}"
+										th:classappend="${(#fields.hasErrors('notes') ? 'is-invalid' : '') + (#sets.contains(buttons, 'SHOW') ? ' border-0' : '')}">
+								</textarea>
+								<span class="invalid-feedback" th:each="err : ${#fields.errors('notes')}" th:text="${err}"></span>
 							</div>
-							<textarea type="text" th:field="*{notes}" class="form-control" style="min-height: 150px" th:readonly="${#sets.contains(buttons, 'SHOW')}"
-								th:classappend="${#fields.hasErrors('notes')} ? 'is-invalid'" th:attr="placeholder=#{Notes}">
-							</textarea>
-							<span class="invalid-feedback" th:each="err : ${#fields.errors('notes')}" th:text="${err}"></span>
 						</div>
-						<!-- <div class="btn-group">
-							<button name="submit" class="btn btn-primary ok" th:text="#{Save}" th:readonly="${#sets.contains(buttons, 'SHOW')}">Save</button>
-						</div> -->
 					</div>
 
-					<div id="publisher-items" class="list-group col-4">
+					<div id="publisher-items" class="list-group col-md-4">
+						<label for="search-input" th:text="#{Searches} + ' ' + #{Code} + ' ' + #{And} + ' ' + #{Name}">
+							Searches Code and Name
+						</label>
 						<div id="search-form" class="input-group mb-2">
-							<input id="search-input" type="text" name="keyword" th:value="*{keyword}" class="form-control"
-									th:attr="placeholder=#{Keywords} + ' (' + #{Code} + ' ' + #{Or} + ' ' + #{Name} + ')'"/>
+							<input id="search-input" type="text" name="keyword" th:value="*{keyword}" class="form-control" />
 							<div class="input-group-append">
 								<button id="search-button" class="btn btn-success" formmethod="post"
 										th:formaction="@{__${ADMIN_PATH}__/publisher/search}">
-									<span data-feather="search"></span>
+									<span data-feather="search"></span> <span th:text="#{Search}">Search</span>
 								</button>
 							</div>
 						</div>
 						<a class="list-group-item list-group-item-action d-flex overflow-hidden" th:id="${publisher.id}"
-								th:each="publisher : ${publishers}" th:classappend="${selectedPublisher != null and publisher.id == selectedPublisher.id} ? 'active'"
+								th:each="publisher : ${publishers}"
+								th:classappend="${selectedPublisher != null and publisher.id == selectedPublisher.id} ? 'active'"
 								th:href="@{__${ADMIN_PATH}__/publisher/show(id=${publisher.id},page=${pagination.currentPageNumber})}">
 							<span th:text="${publisher.print()}">Publisher</span>
 						</a>
@@ -156,22 +159,18 @@
 							</div>
 							<ul class="pagination pagination-sm">
 								<li th:classappend="${pagination.hasPreviousPage() ? '' : 'disabled'}" class="page-item">
-									<!-- <a th:href="@{${pagination.url}(page=${pagination.previousPageNumber})}" th:text="#{Prev}" class="page-link">Prev</a> -->
 									<button class="page-link" formmethod="post" th:formaction="@{${pagination.url}(page=${pagination.previousPageNumber})}">
-										<span data-feather="chevron-left"></span>
+										<span data-feather="chevron-left"></span> <span th:text="#{Prev}">Previous</span>
 									</button>
 								</li>
 								<li th:each="p : ${pagination.getPageables(pageable)}" th:classappend="${p.pageNumber eq pagination.currentPageNumber ? 'active' : ''}" class="page-item">
-									<!-- <a th:href="@{${pagination.url}(page=${p.pageNumber})}" th:text="${p.pageNumber + 1}" class="page-link">
-									</a> -->
 									<button class="page-link" formmethod="post" th:formaction="@{${pagination.url}(page=${p.pageNumber})}">
 										<span th:text="${p.pageNumber + 1}">Prev</span>
 									</button>
 								</li>
 								<li th:classappend="${pagination.hasNextPage() ? '' : 'disabled'}" class="page-item">
-									<!-- <a th:href="@{${pagination.url}(page=${pagination.nextPageNumber})}" th:text="#{Next}" class="page-link">Next</a> -->
 									<button class="page-link" formmethod="post" th:formaction="@{${pagination.url}(page=${pagination.nextPageNumber})}">
-										<span data-feather="chevron-right"></span>
+										<span data-feather="chevron-right"></span> <span th:text="#{Next}">Next</span>
 									</button>
 								</li>
 							</ul>
@@ -194,7 +193,7 @@
 							</div>
 							<div class="modal-footer">
 								<button class="btn btn-default" data-dismiss="modal" th:text="#{Cancel}">Cancel</button>
-								<button class="btn btn-primary" id="delete-publisher" th:attr="data-action=@{__${ADMIN_PATH}__/publisher/delete}"
+								<button class="btn btn-danger" id="delete-publisher" th:attr="data-action=@{__${ADMIN_PATH}__/publisher/delete}"
 										disabled="true" th:text="#{Delete}">Delete</button>
 							</div>
 						</div>
@@ -213,19 +212,26 @@
 								</div>
 								<div class="modal-body">
 									<div class="form-group">
-										<input type="text" name="code" class="form-control" th:attr="placeholder=#{Code} + ' (' + #{SearchField} + ')'" />
+										<label for="publisher-modal-code" th:text="#{Code}">Code</label>
+										<input type="text" name="code" class="form-control" />
+										<span th:fragment="is-search-field" th:text="#{SearchField}">Search field</span>
 									</div>
 									<div class="form-group">
-										<input type="text" name="name" class="form-control" th:attr="placeholder=#{Name} + ' (' + #{SearchField} + ')'" />
+										<label for="publisher-modal-name" th:text="#{Name}">Name</label>
+										<input type="text" name="name" class="form-control" />
+										<th:block th:insert="~{::is-search-field}"></th:block>
 									</div>
 									<div class="form-group">
-										<input type="text" name="country" class="form-control" th:attr="placeholder=#{Country}" />
+										<label for="publisher-modal-country" th:text="#{Country}">Country</label>
+										<input type="text" name="country" class="form-control" />
 									</div>
 									<div class="form-group">
-										<input type="text" name="webpage" class="form-control" th:attr="placeholder=#{Webpage}" />
+										<label for="publisher-modal-webpage" th:text="#{Webpage}">Webpage</label>
+										<input type="text" name="webpage" class="form-control" />
 									</div>
 									<div class="form-group">
-										<textarea name="notes" class="form-control" th:attr="placeholder=#{Notes}" style="min-height: 100px"></textarea>
+										<label for="publisher-modal-notes" th:text="#{Notes}">Notes</label>
+										<textarea name="notes" class="form-control" style="min-height: 100px"></textarea>
 									</div>
 									<button id="publisher-modal-add-new" type="button" class="btn btn-primary"><span th:text="#{AddNew}">Add New</button>
 									<button id="publisher-modal-search" type="button" class="btn btn-primary"><span th:text="#{Search}">Search</button>
@@ -328,6 +334,14 @@
 				<script th:inline="javascript">
 					// <![CDATA[
 					$(function () {
+						let isShow = /*[[${#sets.contains(buttons, 'SHOW')}]]*/ false;
+
+						// Remove the mandatory field labels
+						if (isShow) {
+							$('#mandatory-field-code').remove();
+							$('#mandatory-field-name').remove();
+						}
+
 						$('#wr-page-content').on('click', '.list-group-item', function(e) {
 							e.preventDefault();
 							let $self = $(this);
@@ -357,7 +371,7 @@
 						});
 						$('#delete-modal').on('change', ':input[name="confirmed"]', function () {
 							var confirmed = $(this);
-							$('#delete-modal .btn-primary').prop('disabled', !confirmed.is(':checked'));
+							$('#delete-modal .btn-danger').prop('disabled', !confirmed.is(':checked'));
 						});
 						$('#wr-page-header').on('click', '[data-action]', function(e) {
 							e.preventDefault();
@@ -392,7 +406,19 @@
 							}
 
 							$form.attr('action', action);
-							$form.submit();
+
+							// We don't set the required property using Thymeleaf because we
+							// want to be able to search from the add state.
+							$('#code').prop('required', true);
+							$('#name').prop('required', true);
+
+							if ($form[0].checkValidity() === false && !$self.is('#cancel-action')) {
+								e.preventDefault();
+								e.stopPropagation();
+								$form[0].classList.add('was-validated');
+							} else {
+								$form.submit();
+							}
 						});
 					});
 					// ]]>

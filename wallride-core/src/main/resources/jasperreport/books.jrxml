@@ -10,13 +10,16 @@
 	<import value="java.util.*"/>
 	<import value="net.sf.jasperreports.engine.data.*"/>
 	<queryString language="hql">
-		<![CDATA[B.code, B.title, A.name
-		FROM BookInformation B JOIN Author A WHERE B.author_id = A.id
-		ORDER BY code]]>
+		<![CDATA[B.code, B.title, GROUP_CONCAT(DISTINCT A.name) AS authors
+		FROM book_information B
+		LEFT JOIN book_author BA ON B.id = BA.book_id
+		LEFT JOIN author A ON A.id = BA.author_id
+		GROUP BY B.code, B.title
+		ORDER BY B.code]]>
 	</queryString>
 	<field name="code" class="java.lang.String"/>
 	<field name="title" class="java.lang.String"/>
-	<field name="author" class="org.wallride.domain.Author"/>
+	<field name="authors" class="java.util.SortedSet"/>
 	<background>
 		<band/>
 	</background>
@@ -91,7 +94,7 @@
 					<font fontName="文泉驛正黑" size="14" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Identity-H" isPdfEmbedded="false"/>
 					<paragraph lineSpacing="Single"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$R{AuthorName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$R{AuthorNames}]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement key="line-4" mode="Opaque" x="0" y="55" width="530" height="1" forecolor="#000000" backcolor="#FFFFFF" uuid="7b31ea7f-8bac-4278-a88f-809d1749fd33"/>
@@ -144,7 +147,7 @@
 					<font fontName="文泉驛正黑" size="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Identity-H" isPdfEmbedded="false"/>
 					<paragraph lineSpacing="Single"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{author}.getName()]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{authors}]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement key="line-2" mode="Opaque" x="0" y="20" width="530" height="1" forecolor="#000000" backcolor="#FFFFFF" uuid="c917e4f2-aeaa-4e98-9d9d-01885387b089"/>

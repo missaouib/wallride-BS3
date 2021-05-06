@@ -33,14 +33,26 @@ public class PublisherForm implements Serializable {
 
 	interface CreateValidations {}
 	interface UpdateValidations {}
-	@NotNull(groups = {UpdateValidations.class}) private Long id;
-	@NotNull(groups = {CreateValidations.class, UpdateValidations.class}) private String code;
-	@NotNull(groups = {CreateValidations.class, UpdateValidations.class}) private String name;
+
+	@NotNull(groups = {UpdateValidations.class})
+	private Long id;
+
+	@NotNull(groups = {CreateValidations.class, UpdateValidations.class})
+	private String code;
+
+	@NotNull(groups = {CreateValidations.class, UpdateValidations.class})
+	private String name;
+
 	private String country;
+
 	private String webpage;
+
 	private String notes;
+
 	private String language;
+
 	private String keyword;
+	
 	private boolean confirmed;
 
 	public Long getId() {

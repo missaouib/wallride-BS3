@@ -102,12 +102,9 @@
 
 							$customFieldForm.on('change', 'select[name="type"]', function() {
 								var value = $(this).val().toString();
-								//logger.info('customFieldForm value %s', value);
 								if (value == 'SELECTBOX' || value == 'CHECKBOX' || value == 'RADIO') {
-									//$fieldOption.show();
 									$fieldOption.removeClass('d-none d-sm-none');
 								} else {
-									//$fieldOption.hide();
 									$fieldOption.addClass('d-none d-sm-none');
 								}
 							});

@@ -229,15 +229,12 @@
 									/*<![CDATA[*/
 									$(function() {
 										var websiteLink = /*[[${WEBSITE_LINK} + '/']]*/ '/';
-										//var today = moment().format('YYYY/MM/DD/');
 										$('#wr-page-content').on('change', 'input[name="date"]', function(e) {
 											var inputDate = $(this).val();
 											if (inputDate != "") {
-												//var urlPath = moment(inputDate, 'YYYY/MM/DD hh:mm').format('YYYY/MM/DD/');
 												let urlPath;
 												try {
 													urlPath = date_fns_format(date_fns_parse(inputDate, "yyyy/MM/dd HH:mm", new Date()), "yyyy/MM/dd/");
-													//logger.info('在 create.html: %s', JSON.stringify(urlPath));
 												} catch(e){
 													urlPath = date_fns_format(new Date(), "yyyy/MM/dd/");
 												}  

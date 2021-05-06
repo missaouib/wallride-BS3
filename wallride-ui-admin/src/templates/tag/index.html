@@ -37,15 +37,15 @@
 					<section class="search-condition">
 						<div class="search-condition-simple">
 							<form class="form-inline" method="get" th:action="@{/_admin/__${language}__/tags/index}" th:object="${form}">
-								<input type="submit" name="search" style="visibility:hidden; width:0; height:0;"/>
-								<div class="form-group ml-n3">
-									<div class="input-group keyword-search ml-n3">
+								<div class="form-group">
+									<div class="input-group keyword-search">
 										<input type="text" name="keyword" th:value="*{keyword}" class="form-control" th:attr="placeholder=#{Keywords}" />
 										<span class="input-group-btn">
 											<button class="btn btn-default ml-1" type="submit" name="search"><span data-feather="search"></span></button>
 										</span>
 									</div>
 								</div>
+								<input type="submit" name="search" style="visibility:hidden; width:0; height:0;"/>
 							</form>
 						</div>
 					</section>
@@ -63,7 +63,7 @@
 								<div class="pagination-group d-flex align-items-end">
 									<div class="pagination-summary pb-2"><span th:text="${pagination.numberOfFirstElement}"></span> - <span th:text="${pagination.numberOfLastElement}"></span> / <span th:text="${pagination.totalElements}"></span></div>
 									<!-- <div> -->
-										<ul class="pagination paginateon-sm d-flex flex-wrap mb-0 pb-0">
+										<ul class="pagination pagination-sm d-flex flex-wrap mb-0 pb-0">
 											<li th:classappend="${pagination.hasPreviousPage() ? '' : 'disabled'}"><a th:href="@{__${ADMIN_PATH}__/tags/index(page=${pagination.previousPageNumber})}" th:text="#{Prev}">Prev</a></li>
 											<li th:each="p : ${pagination.getPageables(pageable)}" th:classappend="${p.pageNumber eq pagination.currentPageNumber ? 'active' : ''}"><a th:href="@{__${ADMIN_PATH}__/tags/index(page=${p.pageNumber},size=${p.pageSize})}" th:text="${p.pageNumber + 1}"></a></li>
 											<li th:classappend="${pagination.hasNextPage() ? '' : 'disabled'}"><a th:href="@{__${ADMIN_PATH}__/tags/index(page=${pagination.nextPageNumber})}" th:text="#{Next}">Next</a></li>
@@ -215,7 +215,6 @@
 													//$field.closest('.form-group').addClass('has-error');
 													//$field.closest('.form-group').find('.help-block.has-error').remove();
 													//$field.after($('<span class="help-block has-error" />').text(message));
-													//logger.info('field= %s, message = %s', field, message);
 													$(field).addClass('is-invalid').after($('<span class="invalid-feedback" />').text(message));
 												});
 												$self.button('reset');

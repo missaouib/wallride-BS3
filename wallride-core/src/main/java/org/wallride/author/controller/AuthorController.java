@@ -37,7 +37,7 @@ import org.wallride.author.service.AuthorService;
 import org.wallride.domain.Author;
 import org.wallride.exception.DuplicateCodeException;
 import org.wallride.exception.EmptyCodeException;
-import org.wallride.author.service.AuthorService.Actions;
+import org.wallride.support.Actions;
 import org.wallride.support.AuthorizedUser;
 import org.wallride.support.CustomResourceBundleControl;
 import org.wallride.support.ReportUtils;
@@ -198,7 +198,6 @@ public class AuthorController {
 			@ModelAttribute("form") AuthorForm form,
 			@ModelAttribute("authors") Page<Author> authors,
 			@ModelAttribute("searchUrl") String searchUrl,
-			BindingResult result,
 			Model model) {
 		Set<String> buttons = new HashSet<>();
 		buttons.add(Actions.ADD.toString());
@@ -219,7 +218,6 @@ public class AuthorController {
 	public String create(
 			@PathVariable String language,
 			@ModelAttribute("form") AuthorForm form,
-			BindingResult result,
 			Model model)
 			throws BindException {
 		Set<String> buttons = new HashSet<>();
@@ -359,7 +357,7 @@ public class AuthorController {
 	public String delete(
 			@PathVariable String language,
 			@ModelAttribute("form") AuthorForm form,
-			BindingResult errors,
+			BindingResult result,
 			@RequestParam int page,
 			@ModelAttribute("authors") Page<Author> authors,
 			@ModelAttribute("pageable") Pageable pageable,
@@ -367,8 +365,8 @@ public class AuthorController {
 			Model model,
 			AuthorizedUser authorizedUser,
 			RedirectAttributes redirectAttributes) {
-		if (errors.hasErrors()) {
-			logger.debug("Errors: {}", errors);
+		if (result.hasErrors()) {
+			logger.debug("Errors: {}", result);
 			return "redirect:/_admin/{language}/author/search";
 		}
 
@@ -377,17 +375,17 @@ public class AuthorController {
 			author = authorService.deleteAuthor(form, authorizedUser);
 		}
 		catch (ValidationException e) {
-			if (errors.hasErrors()) {
-				logger.debug("Errors: {}", errors);
+			if (result.hasErrors()) {
+				logger.debug("Errors: {}", result);
 				return "redirect:/_admin/{language}/author/search";
 			}
 			throw e;
 		}
 
 		List<String> errorMessages = null;
-		if (errors.hasErrors()) {
+		if (result.hasErrors()) {
 			errorMessages = new ArrayList<>();
-			for (ObjectError error : errors.getAllErrors()) {
+			for (ObjectError error : result.getAllErrors()) {
 				errorMessages.add(messageSourceAccessor.getMessage(error));
 			}
 		}

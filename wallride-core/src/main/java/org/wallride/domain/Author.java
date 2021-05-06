@@ -28,7 +28,7 @@ import org.hibernate.search.annotations.SortableField;
 @DynamicInsert
 @DynamicUpdate
 @Indexed
-public class Author extends DomainObject<Long> {
+public class Author extends DomainObject<Long> implements Comparable<Author> {
 
 	public static final String SHALLOW_GRAPH_NAME = "AUTHOR_SHALLOW_GRAPH";
 	public static final String DEEP_GRAPH_NAME = "AUTHOR_DEEP_GRAPH";
@@ -111,5 +111,14 @@ public class Author extends DomainObject<Long> {
 	public String print() {
 		return getCode() + " - " + getName();
 	}
-	
+
+	@Override
+	public String toString() {
+		return name;
+	}
+
+	@Override
+	public int compareTo(Author o) {
+		return (int) (this.getId() - o.getId());
+	}
 }

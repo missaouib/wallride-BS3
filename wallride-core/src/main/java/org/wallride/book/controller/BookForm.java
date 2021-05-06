@@ -17,10 +17,11 @@
 package org.wallride.book.controller;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -32,19 +33,31 @@ import org.wallride.domain.Book;
 
 public class BookForm implements Serializable {
 
-	private static final long serialVersionUID = 2027706685900948291L;
-
 	interface CreateValidations {}
 	interface UpdateValidations {}
-	@NotNull(groups = {UpdateValidations.class}) private Long id;
-	@NotNull(groups = {CreateValidations.class, UpdateValidations.class}) private String code;
+
+	@NotNull(groups = {UpdateValidations.class})
+	private Long id;
+
+	@NotNull(groups = {CreateValidations.class, UpdateValidations.class})
+	private String code;
+
 	private String language;
-	@NotNull(groups = {CreateValidations.class, UpdateValidations.class}) private String title;
-	private Set<Long> authorIds = new HashSet<>();
+
+	@NotNull(groups = {CreateValidations.class, UpdateValidations.class})
+	private String title;
+
+	private List<Long> authorIds = new ArrayList<>();
+
 	private String publisherId;
+
 	private String description;
+
+	@Size(max = 17, groups = {CreateValidations.class, UpdateValidations.class})
 	private String isbn;
+
 	private String keyword;
+	
 	private boolean confirmed;
 
 	public Long getId() {
@@ -84,11 +97,11 @@ public class BookForm implements Serializable {
 		this.title = title;
 	}
 
-	public Set<Long> getAuthorIds() {
+	public List<Long> getAuthorIds() {
 		return authorIds;
 	}
 
-	public void setAuthorIds(Set<Long> authorIds) {
+	public void setAuthorIds(List<Long> authorIds) {
 		this.authorIds = authorIds;
 	}
 
@@ -186,5 +199,10 @@ public class BookForm implements Serializable {
 		return params;
 	}
 
-
+	@Override
+	public String toString() {
+		return "BookForm [authorIds=" + authorIds + ", code=" + code + ", confirmed=" + confirmed + ", description="
+				+ description + ", id=" + id + ", isbn=" + isbn + ", keyword=" + keyword + ", language=" + language
+				+ ", publisherId=" + publisherId + ", title=" + title + "]";
+	}
 }

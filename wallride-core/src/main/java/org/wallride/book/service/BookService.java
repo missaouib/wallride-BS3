@@ -52,16 +52,6 @@ public class BookService {
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	public enum Actions {
-		ADD,
-		EDIT,
-		SAVE,
-		UPDATE,
-		DELETE,
-		SHOW,
-		CANCEL;
-	}
-
 	public Book createBook(BookForm form, AuthorizedUser createdBy) {
 		if (form.getCode() == null) {
 			throw new EmptyCodeException();

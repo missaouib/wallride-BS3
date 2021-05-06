@@ -37,7 +37,7 @@ import org.wallride.domain.Publisher;
 import org.wallride.exception.DuplicateCodeException;
 import org.wallride.exception.EmptyCodeException;
 import org.wallride.publisher.service.PublisherService;
-import org.wallride.publisher.service.PublisherService.Actions;
+import org.wallride.support.Actions;
 import org.wallride.support.AuthorizedUser;
 import org.wallride.support.CustomResourceBundleControl;
 import org.wallride.support.ReportUtils;

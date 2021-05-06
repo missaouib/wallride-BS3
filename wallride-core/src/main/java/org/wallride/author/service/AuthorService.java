@@ -45,16 +45,6 @@ public class AuthorService {
 	@Resource
 	private AuthorRepository authorRepository;
 
-	public enum Actions {
-		ADD,
-		EDIT,
-		SAVE,
-		UPDATE,
-		DELETE,
-		SHOW,
-		CANCEL;
-	}
-
 	public Author createAuthor(AuthorForm form, AuthorizedUser createdBy) {
 		if (form.getCode() == null) {
 			throw new EmptyCodeException();
@@ -70,7 +60,6 @@ public class AuthorService {
 		author.setLanguage(form.getLanguage());
 		author.setName(form.getName());
 		author.setDescription(form.getDescription());
-		// author.setBooks(form.getBooks());
 
 		author.setCreatedAt(now);
 		author.setCreatedBy(createdBy.toString());
@@ -102,7 +91,6 @@ public class AuthorService {
 		author.setLanguage(form.getLanguage());
 		author.setName(form.getName());
 		author.setDescription(form.getDescription());
-		// author.setBooks(form.getBooks());
 
 		author.setUpdatedAt(now);
 		author.setUpdatedBy(updatedBy.toString());

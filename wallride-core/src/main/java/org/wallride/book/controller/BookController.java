@@ -35,7 +35,7 @@ import org.wallride.domain.Book;
 import org.wallride.exception.DuplicateCodeException;
 import org.wallride.exception.EmptyCodeException;
 import org.wallride.book.service.BookService;
-import org.wallride.book.service.BookService.Actions;
+import org.wallride.support.Actions;
 import org.wallride.support.AuthorizedUser;
 import org.wallride.support.CustomResourceBundleControl;
 import org.wallride.support.ReportUtils;
@@ -90,7 +90,7 @@ public class BookController {
 	
 	@ModelAttribute("form")
 	public BookForm form(ModelMap modelMap) {
-		// Cover the case where form validation fails and the user is redirected back
+		// Cover the case where form validation fails and the user is redirected back.
 		// Source is https://web.archive.org/web/20160606223639/https://gerrydevstory.com/2013/07/11/preserving-validation-error-messages-on-spring-mvc-form-post-redirect-get/
 		BookForm form = (BookForm) modelMap.get("form");
 		if (form == null) {
@@ -137,6 +137,8 @@ public class BookController {
 		buttons.add(Actions.SHOW.toString());
 		model.addAttribute("buttons", buttons);
 
+		logger.info("form.getKeyword() = {}", form.getKeyword());
+
 		return "book/index";
 	}
 
@@ -172,7 +174,6 @@ public class BookController {
 	public String create(
 			@PathVariable String language,
 			@ModelAttribute("form") BookForm form,
-			BindingResult result,
 			Model model)
 			throws BindException {
 		Set<String> buttons = new HashSet<>();
