@@ -140,7 +140,7 @@ public class PublisherController {
 		buttons.add(Actions.EDIT.toString());
 		buttons.add(Actions.SHOW.toString());
 		model.addAttribute("buttons", buttons);
-
+		
 		return "publisher/index";
 	}
 
@@ -168,6 +168,7 @@ public class PublisherController {
 			AuthorizedUser authorizedUser,
 			HttpServletRequest request,
 			HttpServletResponse response) throws BindException {
+		logger.info("/publishers form.getKeyword() = {}", form.getKeyword());
 		if (result.hasErrors()) {
 			throw new BindException(result);
 		}

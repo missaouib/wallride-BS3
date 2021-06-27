@@ -4,25 +4,6 @@ body {
 	/* 	background-image: url(../img/body-bg.png);
 		background-repeat: repeat;
 	 */}
-body,
-.list-group-item-action,
-#header a {
-	color: black;
-}
-#wr-global-nav a {
-	color: white;
-}
-.dropdown-menu a:hover {
-	color: #007bff;
-	text-decoration: none;
-}
-#wr-global-nav .dropdown-menu a {
-	color: black;
-}
-a,
-a:hover {
-	text-decoration: underline;
-}
 h1, h2, h3, h4, h5, h6, input, pre {
 	font-family: 'Segoe UI', Arial, 'Meiryo UI', Meiryo, 'MS PGothic', sans-serif;
 	font-weight: normal;
@@ -65,6 +46,14 @@ input[type="color"],
 	-webkit-transition: none;
 	transition: none;
 }
+a {
+	color: #819FAA;
+	text-decoration: none;
+}
+a:hover {
+	color: #78BFD8;
+	text-decoration: none;
+}
 pre {
 	border: transparent;
 	background-color: transparent;
@@ -96,6 +85,13 @@ pre {
 }
 #header .navbar {
 	border: none;
+	background: #FFFFFF;  /* fallback for old browsers */
+	background: -webkit-linear-gradient(to left, #FFFFFF, #FF9900);  /* Chrome 10-25, Safari 5.1-6 */
+	background: linear-gradient(to left, #FFFFFF, #FF9900); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */	
+}
+#wr-global-nav .navbar-nav>li>a:hover,
+#wr-global-nav .navbar-nav>li>a:focus {
+	background-color: transparent;
 }
 #wr-global-nav .navbar-nav > li > a {
 	padding-top: 0;
@@ -106,22 +102,21 @@ pre {
 	line-height: 40px;
 	padding-left: 0;
 }
+#wr-global-nav a, #wr-blog-nav a {
+	color: #726868;
+}
+#wr-global-nav a:hover, #wr-blog-nav a:hover {
+	color: #819FAA;
+}
 #wr-blog-nav .nav-link.active {
-	background-color: #007bff;
-	color: white;
-}
-#wr-blog-nav .nav-link:hover,
-.list-group-item-action:hover {
-	color: #007bff;
-}
-#wr-blog-nav .nav-link.active:hover,
-.list-group-item-action.active:hover {
-	background-color: transparent;
 	color: #007bff;
 }
 #header .navbar-toggle {
 	background-color: #fff;
 	border: transparent;
+}
+#header .navbar-toggle:hover, .navbar-inverse .navbar-toggle:focus {
+	background-color: #fff;
 }
 #header .navbar-toggle .icon-bar {
 	background: #8a8888;
@@ -151,6 +146,9 @@ pre {
 	top: 0;
 	height: calc(100vh - 41px);
 	overflow-y: auto;
+}
+#wr-blog-nav .navbar-nav>li>a:hover {
+	background-color: transparent;
 }
 #wr-page-header .page-header {
 	margin: 15px 0px 5px;
@@ -250,17 +248,63 @@ body > div:first-of-type:not(.container) {
 	margin-left: 5px;
 }
 /***** button *****/
+.btn-primary {
+	background-color: #E25656;
+	border-color: #DDDDDD;
+}
+.btn-primary:hover, .btn-primary:focus {
+	background-color: #FF7373;
+	border-color: #DDDDDD;
+}
+.btn-info {
+	background-color: #71BAD5;
+	border-color: #F0FBFF;
+}
+.btn-info:hover, .btn-info:focus,.open .dropdown-toggle.btn-info {
+	background-color: #29ACDA;
+	border-color: #F0FBFF;
+}
 .btn-group.open .dropdown-toggle {
 	box-shadow: none;
 	-webkit-box-shadow: none;
+}
+.btn-primary[disabled] {
+	background-color: grey;
+	border-color: #D6D6D6;
+}
+.btn-link {
+	color: #819FAA;
+	text-decoration: none;
+}
+.btn-link:hover {
+	color: #78BFD8;
+	text-decoration: none;
+}
+.btn-default {
+	color: #7A7A7A;
+	border-color: #DFDFDF;
+}
+.btn-default:hover, .btn-default:focus, .btn-default:active, .btn-default.active, .open .dropdown-toggle.btn-default {
+	color: #696868;
+	border-color: #DDDDDD;
+}
+.open .dropdown-toggle.btn-primary {
+	background-color: #FF7373;
+	border-color: #DDDDDD;
+}
+#wr-blog-menu .dropdown-menu {
+	background-color: #FFFEFC;
+}
+.dropdown-menu>.active>a, .dropdown-menu>.active>a:hover, .dropdown-menu>.active>a:focus {
+	color: #fff;
+	text-decoration: none;
+	background-color: #d9534f;
+	outline: 0;
 }
 @media (max-width: 767.98px) {
 	#wr-blog-nav .navbar-nav .open .dropdown-menu {
 		background-color: #f7f7f7;
 	}
-}
-.btn-group .btn {
-	border-color: white;
 }
 
 /***** pagination *****/
@@ -283,6 +327,14 @@ body > div:first-of-type:not(.container) {
 	text-decoration: none;
 	background-color: transparent;
 	border: none;
+}
+
+#wr-global-nav .dropdown-menu>li>a:hover,
+#wr-blog-nav .dropdown-menu>li>a:hover,
+.dropdown-menu>li>a:hover,
+.dropdown-menu>li>a:focus {
+	background-color: #ADADAD;
+	color: #ffffff;
 }
 
 /***** table ******/
@@ -616,6 +668,7 @@ legend {
 .redactor_editor h6 {
 	font-family: Meiryo UI, Arial, Helvetica, Verdana, Tahoma, sans-serif !important;
 }
+/* .has-error .redactor_box { */
 .is-invalid .redactor_box {
 	border-color: #b94a48;
 }
@@ -842,7 +895,7 @@ img.fr-dii {
 
 /***** search highlighting *****/
 .highlight {
-	color: red;
+	background-color: yellow;
 }
 
 /***** library *****/

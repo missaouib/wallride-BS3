@@ -16,7 +16,7 @@
 			</h1>
 			<div>
 				<div class="btn-group mr-2">
-					<button th:attr="data-action=@{__${ADMIN_PATH}__/book/report}" class="btn btn-secondary"
+					<button th:attr="data-action=@{__${ADMIN_PATH}__/book/report}" class="btn btn-primary"
 							th:if="!${#lists.isEmpty(books.getContent())}">
 						<span data-feather="download"></span> <span th:text="#{Report}">Report</span>
 					</button>
@@ -28,7 +28,7 @@
 						<span data-feather="plus"></span> <span th:text="#{Add}">Add</span>
 					</button>
 					<button type="button" id="edit-action" class="btn btn-primary"
-							value="edit" th:if="${#sets.contains(buttons, 'EDIT') and (not #lists.isEmpty(books.getContent()))}"
+							value="edit" th:if="${#sets.contains(buttons, 'EDIT') and not #lists.isEmpty(books.getContent()) and selectedBook != null}"
 							th:attr="data-action=@{__${ADMIN_PATH}__/book/edit}">
 						<span data-feather="edit"></span> <span th:text="#{Edit}">Edit</span>
 					</button>
@@ -42,7 +42,7 @@
 							th:attr="data-action=@{__${ADMIN_PATH}__/book/update}">
 						<span data-feather="save"></span> <span th:text="#{Update}">Update</span>
 					</button>
-					<button type="button" id="delete-action" class="btn btn-danger"
+					<button type="button" id="delete-action" class="btn btn-primary"
 							value="delete" th:if="${#sets.contains(buttons, 'DELETE')}"
 							data-toggle="modal" data-target="#delete-modal">
 						<span data-feather="x"></span> <span th:text="#{Delete}">Delete</span>
@@ -88,120 +88,124 @@
 							<span th:text="#{Error}">Error</span>
 						</div>
 						<input type="hidden" name="id" th:value="*{id}" />
-						<div class="form-group row">
-							<label class="col-2 col-form-label" for="code" th:text="#{Code}">Code</label>
-							<div class="col-10">
-								<input type="text" th:field="*{code}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
-										th:classappend="${(#fields.hasErrors('code') ? 'is-invalid' : '') + (#sets.contains(buttons, 'SHOW') ? ' border-0' : '')}" />
-								<span class="invalid-feedback" th:each="err : ${#fields.errors('code')}" th:text="${err}"></span>
-								<span id="mandatory-field-code" th:if="${#lists.isEmpty(#fields.errors('code'))}" th:text="#{MandatoryField}">Mandatory field</span>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<label class="input-group-text" for="code" th:text="#{Code}">Code</label>
 							</div>
+							<input type="text" th:field="*{code}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
+								th:classappend="${#fields.hasErrors('code')} ? 'is-invalid'" th:attr="placeholder=#{Code} + ' (' + #{MandatoryField} + ')'" />
+							<span class="invalid-feedback" th:each="err : ${#fields.errors('code')}" th:text="${err}"></span>
 						</div>
-						<div class="form-group row">
-							<label class="col-2 col-form-label" for="title" th:text="#{Title}">Title</label>
-							<div class="col-10">
-								<input type="text" th:field="*{title}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
-										th:classappend="${(#fields.hasErrors('title') ? 'is-invalid' : '') + (#sets.contains(buttons, 'SHOW') ? ' border-0' : '')}" />
-								<span class="invalid-feedback" th:each="err : ${#fields.errors('title')}" th:text="${err}"></span>
-								<span id="mandatory-field-title" th:if="${#lists.isEmpty(#fields.errors('title'))}" th:text="#{MandatoryField}">Mandatory field</span>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<label class="input-group-text" for="title" th:text="#{Title}">Title</label>
 							</div>
+							<input type="text" th:field="*{title}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
+								th:classappend="${#fields.hasErrors('title')} ? 'is-invalid'" th:attr="placeholder=#{Title} + ' (' + #{MandatoryField} + ')'" />
+							<span class="invalid-feedback" th:each="err : ${#fields.errors('title')}" th:text="${err}"></span>
 						</div>
-						<div class="form-group row">
-							<label class="col-2 col-form-label" for="authors" th:text="#{Authors}">Authors</label>
-							<div id="authors" class="col-10 d-flex align-items-start">
-								<ul class="author-list px-0 mb-0 flex-grow-1">
-									<th:block th:if="*{authorIds.size() == 0}">
-										<li class="author d-flex align-items-center" data-index="0">
-											<input type="text" class="form-control" th:readonly="true"
-													th:classappend="${(#fields.hasErrors('authorIds') ? 'is-invalid' : '') + (#sets.contains(buttons, 'SHOW') ? ' border-0' : '')}" />
-											<th:block th:fragment="author-btns">
-												<button type="button" class="btn btn-link author-btns"
-														data-toggle="modal" data-target="#author-modal"
-														th:disabled="${#sets.contains(buttons, 'SHOW')}">
-													<span th:text="#{Reference}">Reference</span>
-												</button>
-												<button type="button" class="btn btn-link remove d-flex align-items-center" data-dismiss="author"
-														th:disabled="${#sets.contains(buttons, 'SHOW')}">
-													<span class="fa fa-remove"></span> <span class="ml-1" th:text="#{Delete}"></span>
-												</button>
-											</th:block>
-										</li>
-									</th:block>
-									<th:block th:if="*{authorIds ne null}">
-										<li class="author d-flex align-items-center" th:each="authorId,iterStat : *{authorIds}"
-												th:attr="data-index=${iterStat.index}" th:attrappend="data-id=${authorId}"
-												th:classappend="${iterStat.index} != 0 ? 'mt-1' : ''">
-											<input type="text" class="form-control" th:readonly="true"
-													th:classappend="${(#fields.hasErrors('authorIds') ? 'is-invalid' : '') + (#sets.contains(buttons, 'SHOW') ? ' border-0' : '')}" />
-											<th:block th:include="~{::author-btns}"></th:block>
-										</li>
-									</th:block>
-								</ul>
-								<script id="author-tmpl" type="text/x-jsrender">
-								<li class="author d-flex align-items-center mt-1" data-index="{{:index}}">
-									<input type="text" class="form-control" readonly="true"></div>
-									<button type="button" class="btn btn-link" data-toggle="modal" data-target="#author-modal">
-										Reference
-									</button>
-									<button type="button" class="btn btn-link remove d-flex align-items-center" data-dismiss="author">
-										<span class="fa fa-remove"></span> <span class="ml-1" th:text="#{Delete}"></span>
-									</button>
-								</li>
-								</script>
-								<button type="button" id="add-author-btn" class="btn btn-link d-flex align-items-center"
-										th:disabled="${#sets.contains(buttons, 'SHOW')}" data-append="author">
-									<span data-feather="plus"></span> <span class="ml-1" th:text="#{Add}">Add</span>
-								</button>
-								<span class="invalid-feedback" th:each="err : ${#fields.errors('authorIds')}" th:text="${err}"></span>
+						<div id="authors" class="input-group mb-3">
+							<div class="input-group-prepend">
+								<label class="input-group-text" for="authors" th:text="#{Authors}">Authors</label>
 							</div>
-						</div>
-						<div class="form-group row">
-							<label class="col-2 col-form-label" for="publisher" th:text="#{Publisher}">Publisher</label>
-							<div class="col-10 d-flex">
-								<input type="text" id="publisher" class="form-control" th:readonly="true"
-										th:classappend="${(#fields.hasErrors('publisherId') ? 'is-invalid' : '') + (#sets.contains(buttons, 'SHOW') ? ' border-0' : '')}" />
-								<input type="hidden" th:field="*{publisherId}" th:value="*{publisherId}" />
-								<button type="button" class="btn btn-link" data-toggle="modal" data-target="#publisher-modal"
-										th:disabled="${#sets.contains(buttons, 'SHOW')}">
-									<span th:text="#{Reference}">Reference</span>
-								</button>
-								<span class="invalid-feedback" th:each="err : ${#fields.errors('publisherId')}" th:text="${err}"></span>
-							</div>
-						</div>
-						<div class="form-group row">
-							<label class="col-2 col-form-label" for="description" th:text="#{Description}">Description</label>
-							<div class="col-10">
-								<textarea type="text" th:field="*{description}" class="form-control" style="min-height: 150px"
-										th:readonly="${#sets.contains(buttons, 'SHOW')}"
-										th:classappend="${(#fields.hasErrors('description') ? 'is-invalid' : '') + (#sets.contains(buttons, 'SHOW') ? ' border-0' : '')}">
-								</textarea>
-								<th:block th:if="!${#sets.contains(buttons, 'SHOW')}">
-									<script th:inline="javascript" th:replace="froala::setting(selector='textarea#description')"></script>
+							<ul class="author-list px-0 mb-0 flex-grow-1">
+								<th:block th:if="*{authorIds.size() == 0}">
+									<li class="author d-flex align-items-center" data-index="0">
+										<input type="text" class="form-control" th:readonly="true"
+												th:classappend="${#fields.hasErrors('authorIds')} ? 'is-invalid'"
+												th:attr="placeholder=#{Author}" />
+										<th:block th:fragment="author-btns">
+											<button type="button" class="btn btn-link author-btns"
+													data-toggle="modal" data-target="#author-modal"
+													th:disabled="${#sets.contains(buttons, 'SHOW')}"
+													th:classappend="${#sets.contains(buttons, 'SHOW')} ? 'd-none d-md-none' : ''">
+												<span th:text="#{Reference}">Reference</span>
+											</button>
+											<button type="button" class="btn btn-link remove d-flex align-items-center" data-dismiss="author"
+													th:disabled="${#sets.contains(buttons, 'SHOW')}"
+													th:classappend="${#sets.contains(buttons, 'SHOW')} ? 'd-none d-md-none' : ''">
+												<span class="fa fa-remove"></span> <span class="ml-1" th:text="#{Delete}"></span>
+											</button>
+										</th:block>
+									</li>
 								</th:block>
-								<span class="invalid-feedback" th:each="err : ${#fields.errors('description')}" th:text="${err}"></span>
-							</div>
+								<th:block th:if="*{authorIds ne null}">
+									<li class="author d-flex align-items-center" th:each="authorId,iterStat : *{authorIds}"
+											th:attr="data-index=${iterStat.index}" th:attrappend="data-id=${authorId}"
+											th:classappend="${iterStat.index} != 0 ? 'mt-1' : ''">
+										<input type="text" class="form-control" th:readonly="true"
+												th:classappend="${#fields.hasErrors('authorIds')} ? 'is-invalid'"
+												th:attr="placeholder=#{Author}" />
+										<th:block th:include="~{::author-btns}"></th:block>
+									</li>
+								</th:block>
+							</ul>
+							<script id="author-tmpl" type="text/x-jsrender">
+							<li class="author d-flex align-items-center mt-1" data-index="{{:index}}">
+								<input type="text" class="form-control" readonly="true" th:attr="placeholder=#{Author}" />
+								<button type="button" class="btn btn-link" data-toggle="modal" data-target="#author-modal">
+									<span th:text="#{Reference}">Ref.</span>
+								</button>
+								<button type="button" class="btn btn-link remove d-flex align-items-center" data-dismiss="author">
+									<span class="fa fa-remove"></span> <span class="ml-1" th:text="#{Delete}">Delete</span>
+								</button>
+							</li>
+							</script>
+							<button type="button" id="add-author-btn" class="btn btn-link"
+									th:disabled="${#sets.contains(buttons, 'SHOW')}"
+									th:classappend="${#sets.contains(buttons, 'SHOW')} ? 'd-none d-md-none' : ''"
+									data-append="author">
+								<span data-feather="plus"></span> <span th:text="#{Add}">Add</span>
+							</button>
+							<span class="invalid-feedback" th:each="err : ${#fields.errors('authorIds')}" th:text="${err}"></span>
 						</div>
-						<div class="form-group row">
-							<label class="col-2 col-form-label" for="isbn" th:text="#{Isbn}">ISBN</label>
-							<div class="col-10">
-								<input type="text" th:field="*{isbn}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
-										th:classappend="${(#fields.hasErrors('isbn') ? 'is-invalid' : '') + (#sets.contains(buttons, 'SHOW') ? ' border-0' : '')}"
-										maxlength="17" />
-								<span class="invalid-feedback" th:each="err : ${#fields.errors('isbn')}" th:text="${err}"></span>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<label class="input-group-text" for="publisher" th:text="#{Publisher}">Publisher</label>
 							</div>
+							<input type="text" id="publisher" class="form-control" th:readonly="true"
+									th:classappend="${#fields.hasErrors('publisherId')} ? 'is-invalid'" th:attr="placeholder=#{Publisher}" />
+							<input type="hidden" th:field="*{publisherId}" th:value="*{publisherId}" />
+							<button type="button" class="btn btn-link" data-toggle="modal" data-target="#publisher-modal"
+									th:disabled="${#sets.contains(buttons, 'SHOW')}"
+									th:classappend="${#sets.contains(buttons, 'SHOW')} ? 'd-none d-md-none' : ''">
+								<span th:text="#{Reference}">Ref.</span>
+							</button>
+							<span class="invalid-feedback" th:each="err : ${#fields.errors('publisherId')}" th:text="${err}"></span>
+						</div>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<label class="input-group-text" for="description" th:text="#{Description}">Description</label>
+							</div>
+							<textarea type="text" th:field="*{description}" class="form-control" style="min-height: 150px"
+									th:readonly="${#sets.contains(buttons, 'SHOW')}"
+									th:classappend="${#fields.hasErrors('description')} ? 'is-invalid'"
+									th:attr="placeholder=#{Description}"></textarea>
+							<th:block th:if="!${#sets.contains(buttons, 'SHOW')}">
+								<script th:inline="javascript" th:replace="froala::setting(selector='textarea#description')"></script>
+							</th:block>
+							<span class="invalid-feedback" th:each="err : ${#fields.errors('description')}" th:text="${err}"></span>
+						</div>
+						<div class="input-group">
+							<div class="input-group-prepend">
+								<label class="input-group-text" for="isbn" th:text="#{Isbn}">ISBN</label>
+							</div>
+							<input type="text" th:field="*{isbn}" class="form-control" th:readonly="${#sets.contains(buttons, 'SHOW')}"
+									th:classappend="${#fields.hasErrors('isbn')} ? 'is-invalid'" th:attr="placeholder=#{Isbn}"
+									maxlength="17" />
+							<span class="invalid-feedback" th:each="err : ${#fields.errors('isbn')}" th:text="${err}"></span>
 						</div>
 					</div>
 
 					<div id="book-items" class="list-group col-md-4">
-						<label for="search-input" th:text="#{Searches} + ' ' + #{Code} + ', ' + #{Title} + ', ' + #{AuthorName} + ', ' + #{And} + ' ' + #{Description}">
-							Searches Code, Title, Author Name, and Description
-						</label>
 						<div id="search-form" class="input-group mb-2">
-							<input id="search-input" type="text" name="keyword" th:value="*{keyword}" class="form-control" />
+							<label class="sr-only" for="search-input" th:text="#{Search}">Search</label>
+							<input id="search-input" type="text" name="keyword" th:value="*{keyword}" class="form-control"
+									th:attr="placeholder=#{Keywords} + ' (' + #{Code} + ', ' + #{Title} + ', ' + #{AuthorName} + ', ' + #{Or} + ' ' + #{Description} + ')'"/>
 							<div class="input-group-append">
 								<button id="search-button" class="btn btn-success" formmethod="post"
 										th:formaction="@{__${ADMIN_PATH}__/book/search}">
-									<span data-feather="search"></span> <span th:text="#{Search}">Search</span>
+									<span data-feather="search"></span> <span class="sr-only" th:text="#{Search}">Search</span>
 								</button>
 							</div>
 						</div>
@@ -217,7 +221,7 @@
 							<ul class="pagination pagination-sm">
 								<li th:classappend="${pagination.hasPreviousPage() ? '' : 'disabled'}" class="page-item">
 									<button class="page-link" formmethod="post" th:formaction="@{${pagination.url}(page=${pagination.previousPageNumber})}">
-										<span data-feather="chevron-left"></span> <span th:text="#{Prev}">Previous</span>
+										<span data-feather="chevron-left"></span>
 									</button>
 								</li>
 								<li th:each="p : ${pagination.getPageables(pageable)}" th:classappend="${p.pageNumber eq pagination.currentPageNumber ? 'active' : ''}" class="page-item">
@@ -227,7 +231,7 @@
 								</li>
 								<li th:classappend="${pagination.hasNextPage() ? '' : 'disabled'}" class="page-item">
 									<button class="page-link" formmethod="post" th:formaction="@{${pagination.url}(page=${pagination.nextPageNumber})}">
-										<span data-feather="chevron-right"></span> <span th:text="#{Next}">Next</span>
+										<span data-feather="chevron-right"></span>
 									</button>
 								</li>
 							</ul>
@@ -264,21 +268,12 @@
 
 				<script th:inline="javascript">
 					// <![CDATA[
+					function updateAuthorIndices() {
+						$('.author').each(function (i) {
+							$(this).data('index', i).attr('data-index', i);
+						});
+					}
 					$(function () {
-						let isShow = /*[[${#sets.contains(buttons, 'SHOW')}]]*/ false;
-
-						// Remove the mandatory field labels
-						if (isShow) {
-							$('#mandatory-field-code').remove();
-							$('#mandatory-field-title').remove();
-						}
-
-						function updateAuthorIndices() {
-							$('.author').each(function (i) {
-								$(this).data('index', i).attr('data-index', i);
-							});
-						}
-
 						$('#authors').on('click', '[data-dismiss="author"]', function(e) {
 							e.preventDefault();
 							$(this).closest('.author').remove();
@@ -358,7 +353,7 @@
 									action += '&id=' + first_id;
 								}
 							} else if ($self.is('#add-action')) {
-								$form.find(':input').val('');
+								$form.find(':input').not('#search-input').val('');
 								$('.author-list').empty();
 							}
 
@@ -385,19 +380,7 @@
 							});
 
 							$form.attr('action', action);
-
-							// We don't set the required property using Thymeleaf because we
-							// want to be able to search from the add state.
-							$('#code').prop('required', true);
-							$('#title').prop('required', true);
-
-							if ($form[0].checkValidity() === false && !$self.is('#cancel-action')) {
-								e.preventDefault();
-								e.stopPropagation();
-								$form[0].classList.add('was-validated');
-							} else {
-								$form.submit();
-							}
+							$form.submit();
 						});
 					});
 					$(document).on('show.bs.modal', '#author-modal', function(e) {

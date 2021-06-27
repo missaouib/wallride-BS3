@@ -93,6 +93,10 @@ public class User extends DomainObject<Long> {
 	@Column(name = "role", length = 20, nullable = false)
 	private SortedSet<Role> roles = new TreeSet<>();
 
+	@Column(length = 6, nullable = false)
+	@Field(analyze = Analyze.NO)
+	private String language;
+
 	@Override
 	public Long getId() {
 		return id;

@@ -31,6 +31,8 @@ import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -49,6 +51,8 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
 	@PersistenceContext
 	private EntityManager entityManager;
 
+	private static Logger logger = LoggerFactory.getLogger(BookRepositoryImpl.class);
+
 	@Override
 	public Page<Book> search(BookForm form) {
 		return search(form, Pageable.unpaged());
@@ -60,6 +64,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
 		Criteria criteria = session.createCriteria(Book.class)
 				.setFetchMode("authors", FetchMode.JOIN);
 
+		logger.info("search form.getKeyword() = {}", form.getKeyword());
 		FullTextQuery persistenceQuery = buildFullTextQuery(form, pageable, criteria);
 		int resultSize = persistenceQuery.getResultSize();
 		List<Book> results = persistenceQuery.getResultList();

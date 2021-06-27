@@ -99,6 +99,11 @@ public class BookController {
 		return form;
 	}
 
+	@ModelAttribute("logger")
+	public Logger logger() {
+		return logger;
+	}
+
 	@ExceptionHandler(BindException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public @ResponseBody RestValidationErrorModel bindException(BindException e) {
@@ -137,7 +142,7 @@ public class BookController {
 		buttons.add(Actions.SHOW.toString());
 		model.addAttribute("buttons", buttons);
 
-		logger.info("form.getKeyword() = {}", form.getKeyword());
+		logger.info("search form.getKeyword() = {}", form.getKeyword());
 
 		return "book/index";
 	}
@@ -156,6 +161,8 @@ public class BookController {
 		buttons.add(Actions.EDIT.toString());
 		buttons.add(Actions.SHOW.toString());
 		model.addAttribute("buttons", buttons);
+
+		logger.info("show form.getKeyword() = {}", form.getKeyword());
 
 		if (result.hasErrors()) {
 			return "book/index";
