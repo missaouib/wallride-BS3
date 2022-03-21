@@ -48,6 +48,16 @@
 		</repository>
 	</distributionManagement>
 
+	<!-- Copied from https://stackoverflow.com/a/68815216 -->
+	<repositories>
+        <!-- JasperSoft, they modified a standard library for their own special needs -->
+        <repository>
+            <id>jaspersoft-third-party</id>
+            <url>https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/</url>
+        </repository>
+	</repositories>
+
+
 	<properties>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
