@@ -22,6 +22,11 @@ drop table if exists `tag`;
 drop table if exists `user`;
 drop table if exists `user_invitation`;
 drop table if exists `user_role`;
+drop table if exists `publisher`;
+drop table if exists `author`;
+drop table if exists `book`;
+drop table if exists `book_information`;
+drop table if exists `book_author`;
 
 drop table if exists `persistent_logins`;
 

@@ -7,7 +7,7 @@ CREATE TABLE `article` (
 CREATE TABLE `blog` (
   `id`                                  BIGINT       NOT NULL AUTO_INCREMENT,
   `code`                                VARCHAR(200) NOT NULL,
-  `default_language`                    VARCHAR(3)   NOT NULL,
+  `default_language`                    VARCHAR(6)   NOT NULL,
   `ga_tracking_id`                      VARCHAR(100),
   `ga_profile_id`                       VARCHAR(100),
   `ga_custom_dimension_index`           INTEGER,
@@ -25,7 +25,7 @@ CREATE TABLE `blog` (
 CREATE TABLE `blog_language` (
   `id`         BIGINT     NOT NULL AUTO_INCREMENT,
   `blog_id`    BIGINT     NOT NULL,
-  `language`   VARCHAR(3) NOT NULL,
+  `language`   VARCHAR(6) NOT NULL,
   `title`      LONGTEXT   NOT NULL,
   `created_at` DATETIME   NOT NULL,
   `created_by` VARCHAR(100),
@@ -39,7 +39,7 @@ CREATE TABLE `category` (
   `id`          BIGINT       NOT NULL AUTO_INCREMENT,
   `parent_id`   BIGINT,
   `code`        VARCHAR(200) NOT NULL,
-  `language`    VARCHAR(3)   NOT NULL,
+  `language`    VARCHAR(6)   NOT NULL,
   `name`        VARCHAR(200) NOT NULL,
   `description` LONGTEXT,
   `lft`         INTEGER      NOT NULL,
@@ -56,7 +56,7 @@ create table `custom_field` (
   `id` bigint not null auto_increment,
   `idx` integer,
   `code` varchar(200),
-  `language` varchar(3) not null,
+  `language` varchar(6) not null,
   `name` varchar(200),
   `field_type` varchar(50) not null,
   `default_value` varchar(200),
@@ -89,7 +89,7 @@ create table `custom_field_value` (
 create table `custom_field_option` (
   `custom_field_id` bigint not null,
   `idx` integer not null,
-  `language` varchar(3) not null,
+  `language` varchar(6) not null,
   `name` varchar(200) not null,
   primary key (`custom_field_id` , `idx`)
 )
@@ -164,7 +164,7 @@ CREATE TABLE `password_reset_token` (
 CREATE TABLE `popular_post` (
   `id`         BIGINT      NOT NULL AUTO_INCREMENT,
   `post_id`    BIGINT      NOT NULL,
-  `language`   VARCHAR(3)  NOT NULL,
+  `language`   VARCHAR(6)  NOT NULL,
   `type`       VARCHAR(50) NOT NULL,
   `rank`       INTEGER     NOT NULL,
   `views`      BIGINT      NOT NULL,
@@ -179,7 +179,7 @@ CREATE TABLE `popular_post` (
 CREATE TABLE `post` (
   `id`              BIGINT      NOT NULL AUTO_INCREMENT,
   `code`            VARCHAR(200),
-  `language`        VARCHAR(3)  NOT NULL,
+  `language`        VARCHAR(6)  NOT NULL,
   `status`          VARCHAR(50) NOT NULL,
   `date`            DATETIME,
   `title`           VARCHAR(200),
@@ -231,7 +231,7 @@ CREATE TABLE `post_tag` (
 
 CREATE TABLE `tag` (
   `id`         BIGINT       NOT NULL AUTO_INCREMENT,
-  `language`   VARCHAR(3)   NOT NULL,
+  `language`   VARCHAR(6)   NOT NULL,
   `name`       VARCHAR(200) NOT NULL,
   `created_at` DATETIME     NOT NULL,
   `created_by` VARCHAR(100),
@@ -280,6 +280,66 @@ CREATE TABLE `user_role` (
 )
   ENGINE = InnoDB;
 
+CREATE TABLE `publisher` (
+  `id`         BIGINT       NOT NULL     AUTO_INCREMENT,
+  `created_at` DATETIME     NOT NULL,
+  `created_by` VARCHAR(100) DEFAULT NULL,
+  `updated_at` DATETIME     NOT NULL,
+  `updated_by` VARCHAR(100) DEFAULT NULL,
+  `code`       VARCHAR(200) NOT NULL,
+  `country`    VARCHAR(255) DEFAULT NULL,
+  `language`   VARCHAR(6)   NOT NULL,
+  `name`       VARCHAR(255) NOT NULL,
+  `notes`      LONGTEXT,
+  `webpage`    VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+)
+  ENGINE=InnoDB;
+
+CREATE TABLE `author` (
+  `id`          BIGINT       NOT NULL     AUTO_INCREMENT,
+  `created_at`  DATETIME     NOT NULL,
+  `created_by`  VARCHAR(100) DEFAULT NULL,
+  `updated_at`  DATETIME     NOT NULL,
+  `updated_by`  VARCHAR(100) DEFAULT NULL,
+  `code`        VARCHAR(200) NOT NULL,
+  `description` LONGTEXT,
+  `language`    VARCHAR(6)   NOT NULL,
+  `name`        VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+)
+  ENGINE=InnoDB;
+
+CREATE TABLE `book` (
+  `id` BIGINT NOT NULL,
+  PRIMARY KEY (`id`)
+)
+  ENGINE=InnoDB;
+
+CREATE TABLE `book_information` (
+  `id`           BIGINT       NOT NULL     AUTO_INCREMENT,
+  `created_at`   DATETIME     NOT NULL,
+  `created_by`   VARCHAR(100) DEFAULT NULL,
+  `updated_at`   DATETIME     NOT NULL,
+  `updated_by`   VARCHAR(100) DEFAULT NULL,
+  `code`         VARCHAR(200) NOT NULL,
+  `description`  LONGTEXT,
+  `isbn`         VARCHAR(17)  DEFAULT NULL,
+  `language`     VARCHAR(6)   NOT NULL,
+  `title`        VARCHAR(200) DEFAULT NULL,
+  `publisher_id` BIGINT       DEFAULT NULL,
+  `author_id`    BIGINT       DEFAULT NULL,
+  PRIMARY KEY (`id`)
+)
+  ENGINE=InnoDB;
+
+CREATE TABLE `book_author` (
+  `book_id`   BIGINT NOT NULL,
+  `author_id` BIGINT NOT NULL,
+  PRIMARY KEY (`book_id`,`author_id`)
+)
+  ENGINE=InnoDB;
+
 ALTER TABLE `blog` ADD CONSTRAINT UK_398ypeix0usuwxip7hl30tl95 UNIQUE (`code`);
 ALTER TABLE `blog_language` ADD CONSTRAINT `UKjvbtdcpruai93kkn9en48os1j` UNIQUE (`blog_id`, `language`);
 ALTER TABLE `category` ADD CONSTRAINT `UKbcyxs660s0fku8sf6pgy137ai` UNIQUE (`code`, `language`);
@@ -317,6 +377,17 @@ ALTER TABLE `post_related_post` ADD CONSTRAINT `FKthyi9hidjpq5vmcamwaj2ap2` FORE
 ALTER TABLE `post_tag` ADD CONSTRAINT `FKonr178imgjksqflate1o6ybim` FOREIGN KEY (`post_id`) REFERENCES `post` (`id`);
 ALTER TABLE `post_tag` ADD CONSTRAINT `FK8d78naxn3frlhbqyiurgbtg3v` FOREIGN KEY (`tag_id`) REFERENCES `tag` (`id`);
 ALTER TABLE `user_role` ADD CONSTRAINT `FKhjx9nk20h4mo745tdqj8t8n9d` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
+ALTER TABLE `publisher` ADD CONSTRAINT `UK43ylaxm9mw8oylq10lkavyrkf` UNIQUE (`code`,`language`);
+ALTER TABLE `author` ADD CONSTRAINT `UKaiceg4qeoegewrdexbot1pv25` UNIQUE (`code`,`language`);
+ALTER TABLE `book` ADD CONSTRAINT `FK4iat85jau62sxjh7a53i92j10` FOREIGN KEY (`id`) REFERENCES `book_information` (`id`);
+ALTER TABLE `book_information` ADD CONSTRAINT `UK8d98jhll82rjiq87bf7sufqk9` UNIQUE (`code`,`language`);
+ALTER TABLE `book_information` ADD CONSTRAINT `FKb0lufxkr2i41dxuc0nsb2qah6` UNIQUE (`publisher_id`);
+ALTER TABLE `book_information` ADD CONSTRAINT `FKeg3i5gj50umnxxqhhe1tvdnfd` UNIQUE (`author_id`);
+ALTER TABLE `book_information` ADD CONSTRAINT `FKb0lufxkr2i41dxuc0nsb2qah6` FOREIGN KEY (`publisher_id`) REFERENCES `publisher` (`id`);
+ALTER TABLE `book_information` ADD CONSTRAINT `FKeg3i5gj50umnxxqhhe1tvdnfd` FOREIGN KEY (`author_id`) REFERENCES `author` (`id`);
+ALTER TABLE `book_author` ADD CONSTRAINT `FKd5h7iwuuetl17yrhvrmok9lvj` UNIQUE (`author_id`);
+ALTER TABLE `book_author` ADD CONSTRAINT `FKb3jy859nxg3f1wcgcjw4k5g1u` FOREIGN KEY (`book_id`) REFERENCES `book_information` (`id`);
+ALTER TABLE `book_author` ADD CONSTRAINT `FKd5h7iwuuetl17yrhvrmok9lvj` FOREIGN KEY (`author_id`) REFERENCES `author` (`id`);
 
 CREATE TABLE `persistent_logins` (
   `username`  VARCHAR(64) NOT NULL,
